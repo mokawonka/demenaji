@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  place: one
+  pic_order: 1
+  content_type: MyString
+  data: 
+
+two:
+  place: two
+  pic_order: 1
+  content_type: MyString
+  data: 

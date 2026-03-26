@@ -1,0 +1,123 @@
+<% place = @place %>
+<% content_for :title, place.composed_title %>
+
+<div class="container">
+  <%= csrf_meta_tags %>
+
+  <h2 id="place-title" class="title"><%= place.composed_title %></h2>
+
+  <div class="row">
+
+    <!-- Left Column -->
+    <div class="col-md-8">
+
+      <!-- Picture Carousel -->
+      <% if place.place_pictures.any? %>
+      <div class="container mb-5">
+        <div id="maincarousel" class="carousel slide" data-interval="false" data-ride="carousel">
+
+          <% if place.place_pictures.size > 1 %>
+            <ol class="carousel-indicators">
+              <% place.place_pictures.each_with_index do |pic, i| %>
+                <li data-target="#maincarousel" 
+                    data-slide-to="<%= i %>"
+                    class="<%= 'active' if i.zero? %>"></li>
+              <% end %>
+            </ol>
+          <% end %>
+
+          <!-- Slides -->
+          <div id="carouselcenter" class="carousel-inner">
+            <% place.place_pictures.each_with_index do |pic, i| %>
+              <div class="carousel-item <%= 'active' if i.zero? %>">
+                <img src="<%= pic.display_url %>" alt="photo">
+              </div>
+            <% end %>
+          </div>
+
+          <!-- Navigation arrows -->
+          <% if place.place_pictures.size > 1 %>
+            <a class="carousel-control-prev" href="#maincarousel" role="button" data-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#maincarousel" role="button" data-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="sr-only">Next</span>
+            </a>
+          <% end %>
+
+        </div>
+      </div>
+    <% else %>
+      <div class="container mb-5 text-center py-5 text-muted">
+        <i class="fa fa-image fa-4x opacity-25 mb-3"></i>
+        <p class="fs-17">No pictures added yet</p>
+      </div>
+    <% end %>
+
+      <!-- Favorite Button -->
+      <div class="container pb-5">
+        <div class="row">
+          <div class="col-5 col-sm-6 pl-0">
+            <button id="placeFavorite" class="btn btn-outline-secondary">
+              <% if @is_faved %>
+                <i id="placeFavSign" class="fa fa-heart"></i>
+                <span id="placeFavText"> Favorited </span>
+              <% else %>
+                <i id="placeFavSign" class="fa fa-plus"></i>
+                <span id="placeFavText"> Favorite </span>
+              <% end %>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="container">
+        <span class="fw-100">Description</span>
+        <p id="addescription" class="fs-18"><%= place.description %></p>
+      </div>
+
+      <!-- Apply Button -->
+      <form method="post" action="/Place/<%= place.id %>">
+        <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+        <div class="padfifty container text-center pb-5">
+          <button type="submit" class="btn btn-submit btn-lg">Postuler</button>
+        </div>
+      </form>
+
+    </div>
+
+    <!-- Right Column -->
+    <div class="col-md-4">
+      <div id="admap"></div>
+      <div class="container roboto" id="adinfos">
+        <p class="fs-15">Adresse: <%= place.address %></p>
+        <p class="fs-15"><%= place.number_of_applicants %> postulant(s)</p>
+        <span class="fs-15">Posted on <%= place.post_date&.strftime('%B %d, %Y') %></span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="carouselModal" class="modal">
+  <span id="carouselModalClose" class="close">&times;</span>
+
+  <span id="modalPrev" class="modal-arrow modal-prev">
+    <i class="fa fa-chevron-left"></i>
+  </span>
+
+  <img id="carouselModalImg">
+
+  <span id="modalNext" class="modal-arrow modal-next">
+    <i class="fa fa-chevron-right"></i>
+  </span>
+</div>
+
+<% content_for :scripts do %>
+  <script>
+    var loc = [<%= place.gps_longitude %>, <%= place.gps_latitude %>];
+  </script>
+<% end %>

@@ -1,0 +1,27 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  address: MyString
+  gps_latitude: 1.5
+  gps_longitude: 1.5
+  description: MyText
+  rent: 1
+  bedrooms: 1
+  visitor_count: 1
+  number_of_applicants: 1
+  post_date: 2026-03-25 20:48:50
+  deletion_date_time: 2026-03-25 20:48:50
+
+two:
+  user: two
+  address: MyString
+  gps_latitude: 1.5
+  gps_longitude: 1.5
+  description: MyText
+  rent: 1
+  bedrooms: 1
+  visitor_count: 1
+  number_of_applicants: 1
+  post_date: 2026-03-25 20:48:50
+  deletion_date_time: 2026-03-25 20:48:50

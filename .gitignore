@@ -1,0 +1,58 @@
+# Bundler
+/.bundle
+/vendor/bundle
+
+# Environment & secrets
+.env
+.env.*
+/config/master.key
+/config/credentials/*.key
+
+# Database
+/db/*.sqlite3
+/db/*.sqlite3-*
+/db/*.sqlite3-shm
+/db/*.sqlite3-wal
+
+# Active Storage (local disk)
+/storage/*
+!/storage/.keep
+
+# Logs
+/log/*
+!/log/.keep
+
+# Temp files
+/tmp/*
+!/tmp/.keep
+!/tmp/pids/
+!/tmp/pids/.keep
+
+# Node / Assets
+/node_modules
+/yarn-error.log
+yarn-debug.log*
+.yarn-integrity
+
+# Asset build output (Propshaft / Sprockets)
+/public/assets
+/public/packs
+/public/packs-test
+
+# Pidfiles
+/tmp/pids/*.pid
+
+# Test coverage
+/coverage
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Spring (if used)
+/.spring

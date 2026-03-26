@@ -1,0 +1,19 @@
+<% selected_places.each do |showedplace| %>
+<li>
+  <a href="/Place/<%= showedplace[:place].id %>" class="list-group-item list-group-item-action flex-column align-items-start ad-preview">
+    <div class="row">
+      <div class="col-4">
+        <% if showedplace[:place].place_pictures.any? %>
+          <img class="imgpreview" src="<%= showedplace[:place].place_pictures.first.inline_src %>">
+        <% else %>
+          <%= image_tag 'default-place.png', class: 'imgpreview' %>
+        <% end %>
+      </div>
+      <div class="col-6 offset-2">
+        <div class="d-flex w-100 justify-content-between"><div id="rentandbeds"><h5 class="fw-211">$<%= showedplace[:place].rent %></h5><p class="fs-17"><%= showedplace[:place].bedroom_label.upcase %></p></div><% if showedplace[:is_faved] %><i class="heart fa fa-heart" data-toggle="tooltip" title="Remove Favorite"></i><% else %><i class="heart fa fa-heart-o" data-toggle="tooltip" title="Add Favorite"></i><% end %></div>
+        <p class="d-none"><%= showedplace[:place].gps_longitude %></p><p class="d-none"><%= showedplace[:place].gps_latitude %></p><p class="d-none"><%= showedplace[:place].id %></p>
+      </div>
+    </div>
+  </a>
+</li>
+<% end %>

@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  place: one
+  applicant_id: 1
+  details: MyText
+  status: 1
+  creation_time: 2026-03-25 20:49:19
+
+two:
+  place: two
+  applicant_id: 1
+  details: MyText
+  status: 1
+  creation_time: 2026-03-25 20:49:19

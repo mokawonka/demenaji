@@ -1,0 +1,89 @@
+<% content_for :title, "Demenaji - Site d'annonces immobilier." %>
+<% content_for :mainpage do %>
+  <div class="container-main-page row">
+    <div class="col-md-6 col-lg-4" id="mainsidebar">
+      <div id="placesList">
+        <div id="showedPlaces" class="d-none d-md-block">
+          <ul class="list-group border-top" id="ulist"></ul>
+        </div>
+
+        <div
+          id="hiddenPlaces"
+          style="display:none; visibility:hidden;"
+          class="container text-center">
+          Désolé, nous n'avons pas trouver de locations à cet endroit.<br>
+        </div>
+      </div>
+
+      <div class="container" id="filters">
+        <div class="row">
+          <div class="col-2">
+            <span class="fw-100" id="rentlabel">Loyer</span>
+          </div>
+
+          <div class="col-3 pt-3 pl-4 d-none d-md-block">
+            <input
+              id="sorting"
+              type="checkbox"
+              data-toggle="toggle"
+              data-size="sm"
+              data-on="HIGHEST"
+              data-off="LOWEST"
+              data-onstyle="info"
+              data-offstyle="outline-info"
+            >
+          </div>
+
+          <div class="col-md-7 pl-5 pr-5 col-10">
+            <input id="dual-rent-slider">
+          </div>
+        </div>
+
+        <div class="row pt-4">
+          <div class="col-2">
+            <span class="fw-100">Pièces</span>
+          </div>
+
+          <div class="col-10">
+            <div class="row">
+              <div class="col-4">
+                <button type="button" id="0bed" class="btn button-filter-lg">
+                  <small>Studio</small>
+                </button>
+              </div>
+
+              <div class="col-8">
+                <div class="row mr-2">
+                  <div class="col-3">
+                    <button type="button" id="1bed" class="btn button-filter">1</button>
+                  </div>
+                  <div class="col-3">
+                    <button type="button" id="2bed" class="btn button-filter">2</button>
+                  </div>
+                  <div class="col-3">
+                    <button type="button" id="3bed" class="btn button-filter">3</button>
+                  </div>
+                  <div class="col-3">
+                    <button type="button" id="4bed" class="btn button-filter">4+</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-8 d-none d-md-block">
+      <div id="placesPin">
+        <div id="map"></div>
+        <div id="addbutton" class="overlay">
+          <a href="<%= create_place_path %>">
+            <button>+</button>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+

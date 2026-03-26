@@ -1,0 +1,31 @@
+<ul class="navbar-nav">
+  <% if signed_in? %>
+    <div class="btn-toolbar">
+      <li class="nav-item">
+      <a href="<%= favorites_path %>" class="btn btn-sm button-navbar mr-1 mr-sm-3">
+        <span class="nav-txt">
+          <i class="fa fa-heart-o d-inline-block"></i><p class="d-none d-xl-inline-block"> Favorites </p>
+        </span>
+      </a>
+      </li>
+      <div class="dropdown" id="pamdropdown">
+        <button type="button" class="btn btn-link pr-0 pr-sm-3 pl-0" data-toggle="dropdown">
+            <%= image_tag current_user.profile_picture.presence || 'profile_pic_mini.png' , class: 'mini-profile-pic' %>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right">
+          <p class="fs-12d text-center text-uppercase mb-0"><%= current_user.name %></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item fs-15" href="<%= my_places_path %>">MY PLACES</a>
+          <a class="dropdown-item fs-15" href="<%= my_applications_path %>">MY APPLICATIONS</a>
+          <div class="dropdown-divider"></div>
+          <%= button_to 'Logout', logout_path, method: :delete, class: 'btn btn-danger dropdown-item text-center' %>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <div class="btn-toolbar">
+      <li class="nav-item"><a class="menu-nav-link" href="<%= register_path %>">Register</a></li>
+      <li class="nav-item"><a class="menu-nav-link" href="<%= login_path %>">Login</a></li>
+    </div>
+  <% end %>
+</ul>
