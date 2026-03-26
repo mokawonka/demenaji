@@ -30,7 +30,7 @@
           <div id="carouselcenter" class="carousel-inner">
             <% place.place_pictures.each_with_index do |pic, i| %>
               <div class="carousel-item <%= 'active' if i.zero? %>">
-                <img src="<%= pic.display_url %>" alt="photo">
+                <%= image_tag pic.display_url %>
               </div>
             <% end %>
           </div>

@@ -83,35 +83,35 @@
 
     <!-- Pictures -->
     <div class="row form-group">
-    <label class="fs-17 col-md-3 control-label">Photos <span class="text-muted">(max 10, ≤8MB)</span></label>
-    
-    <div class="col-md-9">
-        <!-- Drag & Drop Zone -->
-        <div id="dropzone"
-            class="border-2 border-dashed border-orange-300 bg-white rounded-3xl p-8 text-center hover:border-orange-400 transition-all cursor-pointer">
-        <div class="mx-auto w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mb-4">
-            <i class="fa fa-cloud-upload fa-3x text-orange-500"></i>
-        </div>
-        <p class="fs-17 mb-1">Ajouter des photos ici ou</p>
-        <label class="btn btn-browse cursor-pointer inline-flex items-center gap-2">
-            <i class="fa fa-folder-open"></i>
-            Parcourir
-            <input id="file-upload" 
-                type="file" 
-                multiple 
-                name="picture_files[]"
-                accept="image/jpeg,image/png,image/webp"
-                style="display:none;">
-        </label>
-        <p class="fs-12d mt-3">JPG, PNG, WebP • Max 8MB</p>
-        </div>
+        <label class="fs-17 col-md-3 control-label">Photos <span class="text-muted">(max 10, ≤8MB)</span></label>
+        
+        <div class="col-md-9">
+            <!-- Drag & Drop Zone -->
+            <div id="dropzone"
+                class="border-2 border-dashed border-orange-300 bg-white rounded-3xl p-8 text-center hover:border-orange-400 transition-all cursor-pointer">
+            <div class="mx-auto w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mb-4">
+                <i class="fa fa-cloud-upload fa-3x text-orange-500"></i>
+            </div>
+            <p class="fs-17 mb-1">Ajouter des photos ici ou</p>
+            <label class="btn btn-browse cursor-pointer inline-flex items-center gap-2">
+                <i class="fa fa-folder-open"></i>
+                Parcourir
+                <input id="file-upload" 
+                    type="file" 
+                    multiple 
+                    name="picture_files[]"
+                    accept="image/jpeg,image/png,image/webp"
+                    style="display:none;">
+            </label>
+            <p class="fs-12d mt-3">JPG, PNG, WebP • Max 8MB</p>
+            </div>
 
-        <!-- Preview Thumbnails -->
-        <div id="image-preview" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mt-6"></div>
+            <!-- Preview Thumbnails -->
+            <div id="image-preview" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mt-6"></div>
 
-        <!-- Hidden file count (keeps your original #file-count label working) -->
-        <div id="file-count" class="mt-3 fs-12d"></div>
-    </div>
+            <!-- Hidden file count (keeps your original #file-count label working) -->
+            <div id="file-count" class="mt-3 fs-12d"></div>
+        </div>
     </div>
 
     <!-- Submit -->

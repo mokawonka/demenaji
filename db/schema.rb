@@ -43,11 +43,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_26_155057) do
   end
 
   create_table "applications", force: :cascade do |t|
-    t.integer "applicant_id", null: false
+    t.bigint "applicant_id", null: false
     t.datetime "created_at", null: false
     t.datetime "creation_time", null: false
     t.text "details"
-    t.integer "place_id", null: false
+    t.bigint "place_id", null: false
     t.integer "status", default: -1, null: false
     t.datetime "updated_at", null: false
     t.index ["applicant_id"], name: "index_applications_on_applicant_id"
@@ -57,21 +57,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_26_155057) do
 
   create_table "favorites", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.integer "place_id", null: false
+    t.bigint "place_id", null: false
     t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.index ["place_id"], name: "index_favorites_on_place_id"
     t.index ["user_id", "place_id"], name: "index_favorites_on_user_id_and_place_id", unique: true
     t.index ["user_id"], name: "index_favorites_on_user_id"
   end
 
   create_table "place_pictures", force: :cascade do |t|
-    t.string "content_type", null: false
     t.datetime "created_at", null: false
-    t.binary "data", null: false
     t.integer "pic_order", default: 0, null: false
-    t.integer "place_id", null: false
+    t.bigint "place_id", null: false
     t.datetime "updated_at", null: false
+    t.index ["place_id", "pic_order"], name: "index_place_pictures_on_place_id_and_pic_order"
     t.index ["place_id"], name: "index_place_pictures_on_place_id"
   end
 
@@ -87,7 +86,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_26_155057) do
     t.datetime "post_date", null: false
     t.integer "rent", null: false
     t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.integer "visitor_count", default: 0, null: false
     t.index ["user_id"], name: "index_places_on_user_id"
   end
