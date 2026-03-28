@@ -17,7 +17,7 @@
           <div class="d-flex w-100 justify-content-between">
 
             <div id="rentandbeds">
-              <h5 class="fw-211"><%= place.rent %> DA</h5>
+              <h5 class="fw-211"><%= number_with_delimiter(place.rent) %> DA</h5>
               <p class="fs-17"><%= place.bedroom_label.upcase %></p>
             </div>
 

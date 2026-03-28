@@ -94,11 +94,14 @@
 
     <!-- Right Column -->
     <div class="col-md-4">
-      <div id="admap"></div>
+      <div id="admap"
+            data-lng="<%= place.gps_longitude %>"
+            data-lat="<%= place.gps_latitude %>"></div>
+
       <div class="container roboto" id="adinfos">
         <p class="fs-15">Adresse: <%= place.address %></p>
         <p class="fs-15"><%= place.number_of_applicants %> postulant(s)</p>
-        <span class="fs-15">Posté le <%= place.post_date&.strftime('%-d %B %Y') %></span>
+        <span class="fs-15">Posté le <%= l(place.post_date, format: :long) %></span>
       </div>
     </div>
 
@@ -118,9 +121,3 @@
     <i class="fa fa-chevron-right"></i>
   </span>
 </div>
-
-<% content_for :scripts do %>
-  <script>
-    var loc = [<%= place.gps_longitude %>, <%= place.gps_latitude %>];
-  </script>
-<% end %>

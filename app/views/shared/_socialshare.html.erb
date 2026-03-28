@@ -1,0 +1,34 @@
+<a id="mailsharing"      href="#" class="fa-solid fa-envelope custom-fa"></a>
+<a id="fbsharing"        href="#" class="fa-brands fa-facebook custom-fa"></a>
+<a id="whatsappsharing"  href="#" class="fa-brands fa-whatsapp custom-fa"></a>
+<a id="twittersharing"   href="#" class="fa-brands fa-x-twitter custom-fa"></a>
+
+
+<script>
+    var placetitle = document.getElementById("place-title").innerHTML;
+
+    var mail = document.getElementById('mailsharing');
+    var facebook = document.getElementById('fbsharing');
+    var twitter = document.getElementById('twittersharing');
+    var whatsapp = document.getElementById('whatsappsharing');
+
+    whatsapp.onclick = function() {
+        this.href = "https://wa.me/?text=" + placetitle + "%20" + window.location.href;
+    };
+
+    mail.onclick = function() {
+        this.href = "mailto:?subject=";
+        this.href += placetitle + "&body=";
+        this.href += 'Regardez cette location: <br>' + window.location.href;
+    };
+
+    facebook.onclick = function() {
+        this.href = "https://www.facebook.com/sharer/sharer.php?u=";
+        this.href += window.location.href;
+    };
+
+    twitter.onclick = function() {
+        this.href = "https://x.com/intent/post?text=" + placetitle + "%20" + window.location.href;
+    };
+
+</script>

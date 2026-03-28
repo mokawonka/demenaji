@@ -12,20 +12,6 @@ var showedFeatures = [];
 var viewedList = [];
 var map = null;
 var admap = null;
-
-document.addEventListener("turbo:before-cache", function() {
-    if (map)   { map.remove();   map = null; }
-    if (admap) { admap.remove(); admap = null; }
-    initArea   = true;
-    lookupArea = null;
-    // Remove ionRangeSlider if still present
-    var slider = $("#dual-rent-slider").data("ionRangeSlider");
-    if (slider) slider.destroy();
-});
-
-document.addEventListener("turbo:load", function() {
-
-
 var ul = document.getElementById("ulist");
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -59,6 +45,38 @@ $("#placeFavorite").click(function(e) {
             document.getElementById("placeFavText").innerHTML = ptext;
         },
         error: function () {
+            console.log("not working");
+        }
+    });
+});
+
+
+
+$(document).on("click", ".heart", function(e) {
+    e.preventDefault();
+
+    var $t = $(this);
+    var placeid = $t.closest("li").find("p").eq(3).text().trim();
+    var isFaved = $t.hasClass("fa-solid");
+    var handlerurl = isFaved ? '/Map?handler=RemoveFavorite' : '/Map?handler=AddFavorite';
+
+    $.ajax({
+        type: 'POST',
+        url: handlerurl,
+        data: { favid: placeid },
+        dataType: "html",
+        headers: {
+            'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function() {
+            if (isFaved) {
+                $t.attr('title', 'Ajouter aux favoris');
+            } else {
+                $t.attr('title', 'Retirer des favoris');
+            }
+            $t.toggleClass("fa-solid fa-regular");
+        },
+        error: function() {
             console.log("not working");
         }
     });
@@ -100,8 +118,12 @@ $("#carouselModal").click(function(e){
 
 if($("#admap").length != 0)
 {
+    var lng  = parseFloat($("#admap").data("lng"));
+    var lat  = parseFloat($("#admap").data("lat"));
+    var loc  = [lng, lat];
+
     var mapStyleUrl = window.mapboxStyleUrl;
-    var admap = new mapboxgl.Map({
+    admap = new mapboxgl.Map({
         container: 'admap',
         style: mapStyleUrl,
         center:loc,
@@ -295,6 +317,7 @@ function LoadPlacesFromServer(polygon)
         },
         success: function(response) {
             $("#ulist").html(response);
+            $('[data-toggle="tooltip"]').tooltip();
             update();
         },
         error: function() {}
@@ -562,12 +585,11 @@ function onError(error) {
     //alert('code: '    + error.code    + '\n' + 'message: ' + error.message + '\n');
 }
 
-function centerOnLocation(map){
-    if (navigator.geolocation) 
-    {
+function centerOnLocation(mapInstance) {
+    if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {
             var currLocation = [position.coords.longitude, position.coords.latitude];
-            map.setCenter(currLocation);
+            mapInstance.setCenter(currLocation);
         }, onError, {enableHighAccuracy: true});
     }
 }
@@ -601,7 +623,7 @@ function openInNewTab(url) {
 if($("#map").length != 0)
 {
     var mapStyleUrl = window.mapboxStyleUrl;
-    var map = new mapboxgl.Map({
+    map = new mapboxgl.Map({
         attributionControl: false,
         container: 'map',
         style: mapStyleUrl,
@@ -614,6 +636,7 @@ if($("#map").length != 0)
     map.dragRotate.disable();
     map.addControl(new mapboxgl.NavigationControl({showCompass:false}));
     if(window.location.search.includes("location")) centerOnLocation(map);
+
     map.addControl(geolocate);
 
     map.on('load', function()
@@ -688,6 +711,37 @@ if($("#map").length != 0)
             map.getCanvas().style.cursor = '';
             popup.remove();
         });
+    });
+
+    // Change markers on li hover
+    $('#ulist').on('mouseenter', 'li', function() {
+        if (!map.getLayer('places')) return;
+        try {
+            var placeid = this.getElementsByTagName("p")[3].textContent.trim();
+            var lng     = parseFloat(this.getElementsByTagName("p")[1].textContent);
+            var lat     = parseFloat(this.getElementsByTagName("p")[2].textContent);
+            var desc    = this.getElementsByTagName("h5")[0].textContent + " | " +
+                        this.getElementsByTagName("p")[0].textContent.toLowerCase();
+            var place_url = "Place/" + placeid;
+
+            map.setLayoutProperty("places", 'icon-image', [
+                "case", ["==", ["get", "name"], placeid],
+                "red-marker", "default-marker"
+            ]);
+
+            map.getCanvas().style.cursor = 'pointer';
+
+            popup.setLngLat([lng, lat])
+                .setHTML('<a href="' + place_url + '">' + desc + '</a>')
+                .addTo(map);
+        }
+        catch(error) {}
+
+    }).on('mouseleave', 'li', function() {
+        if (!map.getLayer('places')) return;
+        map.setLayoutProperty("places", 'icon-image', "default-marker");
+        map.getCanvas().style.cursor = '';
+        popup.remove();
     });
 
 
@@ -892,6 +946,4 @@ function readURL(input) {
 }
 $("#imageUpload").change(function() {
     readURL(this);
-});
-
 });

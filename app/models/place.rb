@@ -16,6 +16,7 @@ class Place < ApplicationRecord
   end
 
   def composed_title
-    "#{rent} DA | #{bedroom_label} | #{address}"
+    formatted_rent = rent.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1 ').reverse
+    "#{formatted_rent} DA | #{bedroom_label} | #{address}"
   end
 end

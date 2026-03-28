@@ -5,3 +5,6 @@ import "controllers"
 import "site"
 import "pictures"
 
+Turbo.session.drive = false
+
+

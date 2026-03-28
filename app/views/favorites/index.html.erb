@@ -1,58 +1,47 @@
-<h2 class="title">
-  Favoris
-  <%= image_tag 'no_fav.png', class: 'mt-3 float-right' %>
-</h2>
+<div class="fav-header">
+  <h2 class="fav-title">Favoris</h2>
+  <% unless @favorites.empty? %>
+    <span class="fav-count"><%= @favorites.count %> annonce<%= @favorites.count > 1 ? 's' : '' %></span>
+  <% end %>
+</div>
 
 <% if @favorites.empty? %>
-  <div class="container watermark">
-    <span class="fs-20">Pas de favoris.</span>
+  <div class="empty-state">
+    <div class="empty-icon"><i class="fa-regular fa-heart"></i></div>
+    <p class="empty-text">Pas de favoris pour le moment.</p>
   </div>
 
 <% else %>
-  <div class="container favorites">
-    <form method="post" action="/Favorites">
-      <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+  <form method="post" action="/Favorites">
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
 
-      <ul class="list-group-fav">
-        <% @favorites.each do |fav| %>
-          <% place = fav.place %>
-          <% next unless place %>
+    <div class="fav-grid">
+      <% @favorites.each do |fav| %>
+        <% place = fav.place %>
+        <% next unless place %>
 
-          <li>
-            <a href="/Place/<%= place.id %>"
-               class="list-group-item list-group-item-action flex-column align-items-start">
-              <div class="row">
+        <a href="/Place/<%= place.id %>" class="fav-card">
+          <div class="fav-img">
+            <% if place.place_pictures.any? %>
+              <%= image_tag place.place_pictures.first.thumbnail_url %>
+            <% else %>
+              <%= image_tag 'default-place.png', style: 'width:100%; height:160px; object-fit:cover;' %>
+            <% end %>
+          </div>
+          <div class="fav-body">
+            <p class="fav-rent"><%= number_with_delimiter(place.rent) %> DA</p>
+            <p class="fav-beds"><%= place.bedroom_label.upcase %></p>
+            <p class="fav-addr"><%= place.address %></p>
+          </div>
+          <div class="fav-footer">
+            <span class="fav-date"><%= l(place.post_date, format: :long) if place.post_date %></span>
+            <button class="btn-remove" name="fav" value="<%= place.id %>" onclick="event.stopPropagation()">
+              &#x2715;
+            </button>
+          </div>
+        </a>
 
-                <!-- Delete button + Image -->
-                <div class="col-4">
-                  <div class="row">
-                    <div class="col-6 col-sm-3">
-                      <button style="height:40px"
-                              class="btn btn-link deletefav"
-                              name="fav"
-                              value="<%= place.id %>">
-                        <i class="fa fa-times text-danger"></i>
-                      </button>
-                    </div>
-                    <div class="col-6 col-sm-9">
-                      <%= image_tag(place.place_pictures.first&.inline_src || asset_path('default-place.png'),
-                                    class: 'imgpreview') %>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Rent + Bedrooms -->
-                <div class="col-6 offset-2">
-                  <h5 class="fw-211">$<%= place.rent %></h5>
-                  <p class="fs-17"><%= place.bedroom_label.upcase %></p>
-                </div>
-
-              </div>
-            </a>
-          </li>
-        <% end %>
-      </ul>
-
-    </form>
-  </div>
+      <% end %>
+    </div>
+  </form>
 <% end %>
