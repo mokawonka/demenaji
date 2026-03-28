@@ -41,8 +41,6 @@ $("#placeFavorite").click(function(e) {
     if($t.hasClass("fa-plus")) handlerurl = '/Place/' + placeid + '?handler=AddFavorite';
     else handlerurl = '/Place/' + placeid + '?handler=RemoveFavorite';
     
-    console.log(handlerurl);
-
     $.ajax({
         type: 'POST',
         url: handlerurl,
@@ -51,18 +49,16 @@ $("#placeFavorite").click(function(e) {
         },
         datatype: "html",
         headers: {
-            RequestVerificationToken: 
-                $('input:hidden[name="__RequestVerificationToken"]').val()
+            'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
         },
         success: function(data)          
         {   
             $t.toggleClass("fa-plus fa-heart");
 
-            var ptext = $t.hasClass("fa-plus") ? "Favorite" : "Favorited";
+            var ptext = $t.hasClass("fa-plus") ? "Favori" : "En Favori";
             document.getElementById("placeFavText").innerHTML = ptext;
         },
         error: function () {
-            // window.location.href = '/Identity/Account/Register';
             console.log("not working");
         }
     });

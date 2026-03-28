@@ -211,19 +211,19 @@ label{
   right:0;
 }
 
+
 .heart {
   font-size: 21px;
   color: rgb(207, 207, 207);
-  height:21px;
+  height: 21px;
 }
 
 .heart:hover {
-  color:rgb(217, 83, 79);
+  color: rgb(217, 83, 79);
 }
 
-.fa-heart
-{
-  color:rgb(217, 83, 79);
+.fa-solid.fa-heart {
+  color: rgb(217, 83, 79);
 }
 
 
@@ -520,42 +520,27 @@ span {
 
 
 /********** SOCIAL SHARE BUTTONS *********/
-
-.fa-envelope {
-  background: rgb(170, 170, 170);
-  color: white;
-}
-
-.fa-facebook {
-  background: #3B5998;
-  color: white;
-}
-
-.fa-twitter {
-  background: #55ACEE;
-  color: white;
-}
-
-.fa-reddit {
-  background: #ff5700;
-  color: white;
-}
-
-.custom-fa:hover{
-  color: white;
-  opacity: 0.7;
-  text-decoration: none;
-}
+.fa-envelope  { background: rgb(170, 170, 170); color: white; }
+.fa-facebook  { background: #3B5998; color: white; }
+.fa-whatsapp  { background: #25D366; color: white; }
+.fa-x-twitter { background: #000000; color: white; }
+.fa-reddit    { background: #ff5700; color: white; }
 
 .custom-fa {
   text-align: center;
   padding: 10px;
   font-size: 14px;
   width: 33px;
-  text-align: center;
   text-decoration: none;
   margin: 3px 2px;
-  border-radius:7px;
+  border-radius: 7px;
+  display: inline-block;
+}
+
+.custom-fa:hover {
+  color: white;
+  opacity: 0.7;
+  text-decoration: none;
 }
 
 /****** END OF SOCIAL SHARE BUTTONS ******/

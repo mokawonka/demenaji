@@ -59,14 +59,17 @@
       <!-- Favorite Button -->
       <div class="container pb-5">
         <div class="row">
+          <div class="col-7 col-sm-6 pr-0">
+              <%= render "shared/socialshare" %> 
+          </div>
           <div class="col-5 col-sm-6 pl-0">
             <button id="placeFavorite" class="btn btn-outline-secondary">
               <% if @is_faved %>
-                <i id="placeFavSign" class="fa fa-heart"></i>
-                <span id="placeFavText"> Favorited </span>
+                <i id="placeFavSign" class="fa-solid fa-heart"></i>
+                <span id="placeFavText" class="d-inline-block"> En Favori </span>
               <% else %>
-                <i id="placeFavSign" class="fa fa-plus"></i>
-                <span id="placeFavText"> Favorite </span>
+                  <i id="placeFavSign" class="fa-solid fa-plus"></i>
+                  <span id="placeFavText" class="d-inline-block"> Favori </span>
               <% end %>
             </button>
           </div>
