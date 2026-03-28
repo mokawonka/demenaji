@@ -56,3 +56,6 @@ yarn-debug.log*
 
 # Spring (if used)
 /.spring
+
+/app/assets/builds/*
+!/app/assets/builds/.keep

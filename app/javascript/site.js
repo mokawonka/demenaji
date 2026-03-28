@@ -1,8 +1,32 @@
+var maxListSize = 200;
+var RENT_MAX = 200000;
+var HighestFirst = false;
+var UpRange = RENT_MAX;
+var LoRange = 0;
+var BedsSelection = [0,0,0,0,0];
+var lookupAreaSize = 3;
+var lookupArea = null;
+var initArea = true;
+var bb, nwbb, nebb, sebb, swbb;
+var showedFeatures = [];
+var viewedList = [];
+var map = null;
+var admap = null;
+
+document.addEventListener("turbo:before-cache", function() {
+    if (map)   { map.remove();   map = null; }
+    if (admap) { admap.remove(); admap = null; }
+    initArea   = true;
+    lookupArea = null;
+    // Remove ionRangeSlider if still present
+    var slider = $("#dual-rent-slider").data("ionRangeSlider");
+    if (slider) slider.destroy();
+});
+
 document.addEventListener("turbo:load", function() {
 
 
 var ul = document.getElementById("ulist");
-var maxListSize = 200;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////// PLACE //////////////////////////////////////////////////////////
@@ -156,7 +180,7 @@ function updatePreview()
     ul.scrollTop = 0;
     try
     {    
-        li = ul.getElementsByTagName('li');
+        var li = ul.getElementsByTagName('li');
 
         var cpt = 0;
         var ll = li.length;
@@ -176,8 +200,6 @@ function updatePreview()
 ///////////////
 // updateMap //
 ///////////////
-var showedFeatures = [];
-var viewedList = [];
 function updateMap()
 {
     //clearing all previous features
@@ -254,42 +276,32 @@ function inbounds(loc, ne, sw){
 
 //////////////////////////
 // LoadPlacesFromServer //
-//////////////////////////
-var lookupAreaSize = 3;
-var lookupArea = null;
-var initArea = true;
-var bb, nwbb, nebb, sebb, swbb;
- 
+////////////////////////// 
 function LoadPlacesFromServer(polygon)
 {
     var turfBB = turf.polygon([polygon]);
     var largerTurfBB = turf.transformScale(turfBB, lookupAreaSize);
     lookupArea = largerTurfBB.geometry.coordinates[0];
-    
+    // lookupArea[0] = NW, [1] = NE, [2] = SE, [3] = SW, [4] = NW (closing point)
+
     $.ajax({
         type: 'POST',
         url: '/Map?handler=Area',
         data: {
             lookuparea: JSON.stringify({
-                "nwbb" : lookupArea[0],
-                "nebb" : lookupArea[1],
-                "sebb" : lookupArea[2],
-                "swbb" : lookupArea[3]
+                "nebb" : lookupArea[1],  // NE = maxLng, maxLat
+                "swbb" : lookupArea[3]   // SW = minLng, minLat
             })
         },
         dataType: "html",
         headers: {
-            RequestVerificationToken: 
-                $('input:hidden[name="__RequestVerificationToken"]').val()
+            'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
         },
-        success: function(response)          
-        {   
-            // filling list with all places within specified area
+        success: function(response) {
             $("#ulist").html(response);
-            // filtering locally
             update();
         },
-        error: function () {}
+        error: function() {}
     });
 }
 
@@ -330,22 +342,28 @@ function updateImp(lrent, urent, beds_selection)
 
     var i, rent, beds, rent_tmp, beds_tmp, a, p;
 
+                        console.log("inside 0");
+
     try
     {
-        li = ul.getElementsByTagName('li');
+        var li = ul.getElementsByTagName('li');
+
+                    console.log("inside");
 
         var ll = li.length;
         for (i = 0; i < ll; i++)
         {
+                                console.log("inside 2");
+
             // reading rent
-            a = li[i].getElementsByTagName("h5")[0];
-            rent_tmp = a.textContent;
-            rent_tmp = rent_tmp.replace(/\$/g, ''); // removing $ sign
-            rent = parseInt(rent_tmp);
+            var a = li[i].getElementsByTagName("h5")[0];
+            var rent_tmp = a.textContent;
+            rent_tmp = rent_tmp.replace(/DA/g, '').replace(/\s/g, '').trim();
+            var rent = parseInt(rent_tmp);
 
             // reading bedrooms
-            p = li[i].getElementsByTagName("p")[0]; // 1rst <p>
-            beds_tmp = p.textContent;
+            var p = li[i].getElementsByTagName("p")[0]; // 1rst <p>
+            var beds_tmp = p.textContent;
 
             if(beds_tmp.trim() === "STUDIO")
             {
@@ -373,20 +391,15 @@ function updateImp(lrent, urent, beds_selection)
             else isInsideMap = false;
 
 
+            var sliderMax = RENT_MAX;
+            var isRentMatch = (rent >= lrent) && (rent <= urent || urent >= sliderMax);
+
+
             // filtering
-            if( ( (rent <= urent && rent >= lrent) ||
-                  (urent == 5000 && rent >= 5000) 
-                )
-                                &&
-                           isBedSelected
-                                &&
-                           isInsideMap
-                )
-            {
-                li[i].style.display = ""; // show
-            }
-            else{
-                li[i].style.display = "none"; // hide
+            if (isRentMatch && isBedSelected && isInsideMap) {
+                li[i].style.display = "";
+            } else {
+                li[i].style.display = "none";
             }
         }
 
@@ -395,8 +408,8 @@ function updateImp(lrent, urent, beds_selection)
 
         viewedList.sort(function(a,b){
 
-            var keyA = parseInt(a.getElementsByTagName("h5")[0].textContent.replace(/\$/g, ''));
-            var keyB = parseInt(b.getElementsByTagName("h5")[0].textContent.replace(/\$/g, ''));
+            var keyA = parseInt(a.getElementsByTagName("h5")[0].textContent.replace(/DA/g, '').replace(/\s/g, '').trim());
+            var keyB = parseInt(b.getElementsByTagName("h5")[0].textContent.replace(/DA/g, '').replace(/\s/g, '').trim());
             if (keyA < keyB) return HighestFirst ? 1 : -1;
             else return HighestFirst ? -1 : 1;
         });
@@ -409,8 +422,12 @@ function updateImp(lrent, urent, beds_selection)
             ul.append(lii); /* This removes li from the old spot and moves it */
         });
     }
-    catch(error){}
+    catch(error){    
+        console.log("ERROR:", error.message, error.stack);
+    }
 }
+
+
 
 //////////////////
 // changeButton // 
@@ -735,12 +752,6 @@ if($("#map").length != 0)
     });
 }
 
-   
-
-
-var HighestFirst = false;
-var UpRange, LoRange;
-var BedsSelection = [0,0,0,0,0]; // binary array. Display all by default
 
 // rent filters
 $("#dual-rent-slider").ionRangeSlider({
@@ -771,13 +782,13 @@ $("#dual-rent-slider").ionRangeSlider({
 
 function update()
 {
-    //console.log("stage 1");
+    console.log("stage 1");
     updateImp(LoRange, UpRange, BedsSelection);
-    //console.log("stage 2");
+    console.log("stage 2");
     updateMap();
-    //console.log("stage 3");
+    console.log("stage 3");
     updatePreview();
-    //console.log("stage 4");
+    console.log("stage 4");
 }
 
 
@@ -821,14 +832,12 @@ if($("#file-upload").length != 0)
     {
         var list = document.getElementById('mbaa-result-address-autocomplete2');
 
-        // ✅ FIX 1: check if list exists
         if (!list) return;
 
         if (!addressSearch.is(e.target) && addressSearch.has(e.target).length === 0)
         {
             var items = list.getElementsByTagName('li');
 
-            // ✅ FIX 2: check if list has items
             if (items.length === 0) {
                 list.style.display = "none";
                 return;
@@ -899,101 +908,4 @@ $("#imageUpload").change(function() {
     readURL(this);
 });
 
-});
-
-document.addEventListener('turbo:load', function () {
-    const dropzone = document.getElementById('dropzone');
-    const fileInput = document.getElementById('file-upload');
-    const previewContainer = document.getElementById('image-preview');
-    const fileCountEl = document.getElementById('file-count');
-
-    if (!dropzone || !fileInput) return;
-
-    let filesArray = [];
-
-    function renderPreviews() {
-        previewContainer.innerHTML = '';
-        filesArray.forEach((file, index) => {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const div = document.createElement('div');
-                div.className = 'relative group';
-                div.innerHTML = `
-                    <img src="${e.target.result}" 
-                        class="w-full aspect-square object-cover rounded-2xl shadow-sm border border-gray-200">
-                    <button type="button" 
-                            data-index="${index}"
-                            class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm shadow transition-all opacity-0 group-hover:opacity-100">
-                        ✕
-                    </button>
-                    <div class="text-xs text-gray-500 mt-1 truncate">${file.name}</div>
-                `;
-                previewContainer.appendChild(div);
-            };
-            reader.readAsDataURL(file);
-        });
-
-        fileCountEl.textContent = `${filesArray.length} file${filesArray.length === 1 ? '' : 's'} selected`;
-    }
-
-    function syncFilesToInput() {
-        const dt = new DataTransfer();
-        filesArray.forEach(file => dt.items.add(file));
-        fileInput.files = dt.files;
-    }
-
-    // === CLICK TO BROWSE ===
-    // Only trigger manually if the click was OUTSIDE the label
-    // (clicks on the label already open the dialog natively)
-    dropzone.addEventListener('click', function (e) {
-        if (e.target.closest('label')) return;
-        fileInput.click();
-    });
-
-    // === SYNC FILES ON SUBMIT ===
-    const form = dropzone.closest('form');
-    form.addEventListener('submit', function () {
-        syncFilesToInput();
-    });
-
-    // === FILE SELECTED ===
-    fileInput.addEventListener('change', function (e) {
-        const newFiles = Array.from(e.target.files || []).filter(f => f.type.startsWith('image/'));
-
-        if (newFiles.length > 0) {
-            filesArray = [...filesArray, ...newFiles].slice(0, 10);
-            renderPreviews();
-        }
-
-        setTimeout(() => { fileInput.value = ''; }, 0);
-    });
-
-    // === DRAG & DROP ===
-    dropzone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dropzone.style.borderColor = '#ff8138';
-    });
-
-    dropzone.addEventListener('dragleave', () => {
-        dropzone.style.borderColor = '';
-    });
-
-    dropzone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dropzone.style.borderColor = '';
-
-        const newFiles = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
-        filesArray = [...filesArray, ...newFiles].slice(0, 10);
-        renderPreviews();
-    });
-
-    // === REMOVE IMAGE ===
-    previewContainer.addEventListener('click', (e) => {
-        const btn = e.target.closest('button[data-index]');
-        if (btn) {
-            const index = parseInt(btn.dataset.index);
-            filesArray.splice(index, 1);
-            renderPreviews();
-        }
-    });
 });

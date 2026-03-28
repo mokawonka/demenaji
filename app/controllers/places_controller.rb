@@ -134,7 +134,7 @@ class PlacesController < ApplicationController
       place_picture.picture.attach(file)
     end
   end
-  
+
 
   def selected_places_from_lookup
     payload = JSON.parse(params[:lookuparea] || '{}')
@@ -146,6 +146,8 @@ class PlacesController < ApplicationController
       .where(gps_latitude: sw[1]..ne[1])
       .includes(:place_pictures)
       .limit(200)
+
+    puts "#{places.count}\n" *20
 
     places.map do |place|
       {

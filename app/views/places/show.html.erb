@@ -52,7 +52,7 @@
     <% else %>
       <div class="container mb-5 text-center py-5 text-muted">
         <i class="fa fa-image fa-4x opacity-25 mb-3"></i>
-        <p class="fs-17">No pictures added yet</p>
+        <p class="fs-17">Pas de photos disponibles</p>
       </div>
     <% end %>
 
@@ -95,7 +95,7 @@
       <div class="container roboto" id="adinfos">
         <p class="fs-15">Adresse: <%= place.address %></p>
         <p class="fs-15"><%= place.number_of_applicants %> postulant(s)</p>
-        <span class="fs-15">Posted on <%= place.post_date&.strftime('%B %d, %Y') %></span>
+        <span class="fs-15">Posté le <%= place.post_date&.strftime('%-d %B %Y') %></span>
       </div>
     </div>
 

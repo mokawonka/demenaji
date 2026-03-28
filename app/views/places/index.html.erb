@@ -1,4 +1,4 @@
-<% content_for :title, "Demenaji - Site d'annonces immobilier." %>
+<% content_for :title, "Demenaji - Annonces immobilières." %>
 <% content_for :mainpage do %>
   <div class="container-main-page row">
     <div class="col-md-6 col-lg-4" id="mainsidebar">
@@ -11,7 +11,7 @@
           id="hiddenPlaces"
           style="display:none; visibility:hidden;"
           class="container text-center">
-          Désolé, nous n'avons pas trouver de locations à cet endroit.<br>
+          Désolé, nous n'avons pas trouver de locations dans cette zone.<br>
         </div>
       </div>
 
@@ -22,16 +22,12 @@
           </div>
 
           <div class="col-3 pt-3 pl-4 d-none d-md-block">
-            <input
-              id="sorting"
-              type="checkbox"
-              data-toggle="toggle"
-              data-size="sm"
-              data-on="HIGHEST"
-              data-off="LOWEST"
-              data-onstyle="info"
-              data-offstyle="outline-info"
-            >
+            <label class="text-toggle">
+              <input type="checkbox" id="sorting">
+                <span class="tslider"></span>
+                <span class="tlabel-off">Plus Bas</span>
+                <span class="tlabel-on">Plus Haut</span>
+            </label>
           </div>
 
           <div class="col-md-7 pl-5 pr-5 col-10">
@@ -78,8 +74,8 @@
       <div id="placesPin">
         <div id="map"></div>
         <div id="addbutton" class="overlay">
-          <a href="<%= create_place_path %>">
-            <button>+</button>
+          <a href="<%= create_place_path %>" class="fab-btn" aria-label="Add place">
+            <i class="fa fa-plus"></i>
           </a>
         </div>
       </div>

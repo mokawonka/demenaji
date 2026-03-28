@@ -6,16 +6,20 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
     <%= stylesheet_link_tag(
       "bootstrap.min",
-      "bootstrap4-toggle.min",
       "ion.rangeSlider.min",
       "bootstrap-theme.min",
-      "mapbox-gl.min",
-      "application",
-      "data-turbo-track": "reload"
+      "mapbox-gl.min"
     ) %>
+    
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "pictures", "data-turbo-track": "reload" %>
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
   </head>
   <body>
     <header>
@@ -32,14 +36,14 @@
                 </div>
                 <div class="col-6 mt-1 pl-0 pr-0 d-none d-xl-flex" style="justify-content:center;">
                   <% if signed_in? %>
-                    <a href="<%= create_place_path %>" class="btn btn-add-place"><b class="plussign">+</b> <b>Add My Place</b></a>
+                    <a href="<%= create_place_path %>" class="btn btn-add-place"><b class="plussign">+</b> <b>Annonce</b></a>
                   <% end %>
                 </div>
               </div>
             </div>
             <div class="form-group has-search col-9 col-sm-8 col-lg-6 mt-3 pl-0 pr-0">
               <span class="fa fa-search form-control-feedback"></span>
-              <input type="search" class="form-control ds-input" id="search-input" placeholder="Moving to ?" autocomplete="off" spellcheck="false">
+              <input type="search" class="form-control ds-input" id="search-input" placeholder="Où ça ?" autocomplete="off" spellcheck="false">
             </div>
           </div>
         </div>
@@ -71,7 +75,6 @@
     <%= javascript_include_tag "jquery.mapbox.geocoder.min", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "ion.rangeSlider.min", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "turf.min", "data-turbo-track": "reload" %>
-    <%= javascript_include_tag "bootstrap4-toggle.min", "data-turbo-track": "reload" %>
     <script>
       mapboxgl.accessToken = '<%= ENV.fetch('MAPBOX_ACCESS_TOKEN', 'pk.eyJ1IjoibW9tbzIwMjYiLCJhIjoiY21uNGxxN3RpMDE5ejJycjU0NzhsM29wbCJ9.FDwTbOK2DuGBZE31YOjWpg') %>';
       window.mapboxStyleUrl = '<%= ENV.fetch('MAPBOX_STYLE_URL', 'mapbox://styles/mapbox/streets-v10') %>';
