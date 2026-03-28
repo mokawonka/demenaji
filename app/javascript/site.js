@@ -342,19 +342,13 @@ function updateImp(lrent, urent, beds_selection)
 
     var i, rent, beds, rent_tmp, beds_tmp, a, p;
 
-                        console.log("inside 0");
-
     try
     {
         var li = ul.getElementsByTagName('li');
 
-                    console.log("inside");
-
         var ll = li.length;
         for (i = 0; i < ll; i++)
         {
-                                console.log("inside 2");
-
             // reading rent
             var a = li[i].getElementsByTagName("h5")[0];
             var rent_tmp = a.textContent;
@@ -782,13 +776,9 @@ $("#dual-rent-slider").ionRangeSlider({
 
 function update()
 {
-    console.log("stage 1");
     updateImp(LoRange, UpRange, BedsSelection);
-    console.log("stage 2");
     updateMap();
-    console.log("stage 3");
     updatePreview();
-    console.log("stage 4");
 }
 
 
