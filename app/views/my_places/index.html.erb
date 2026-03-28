@@ -1,11 +1,11 @@
 <h2 class="title">
-  My Places
+  Mes annonces
   <%= image_tag 'img_places.png', class: 'mt-3 mb-5 float-right' %>
 </h2>
 
 <% if @my_places.empty? %>
   <div class="container watermark">
-    <span class="fs-20">You haven't added any place yet.</span>
+    <span class="fs-20">Vous n'avez ajouté aucune annonce pour l'instant.</span>
   </div>
 
 <% else %>
@@ -19,17 +19,17 @@
           <!-- Place Row -->
           <tr class="beigerow">
             <td class="text-center fs-18">
-              <b><%= p.visitor_count %></b> Views
+              <b><%= p.visitor_count %></b> Vues
             </td>
             <td class="text-center fs-18">
               <a href="/Place/<%= p.id %>"><b><%= p.address %></b></a>
             </td>
             <td class="text-center fs-18">
-              <b><%= p.number_of_applicants %></b> Applicants
+              <b><%= p.number_of_applicants %></b> Postulants
             </td>
             <td class="text-center">
-              <a role="button" class="btn btn-sm btn-warning" href="/CreatePlace/<%= p.id %>">Edit</a>
-              <button class="btn btn-sm btn-danger" formaction="/MyPlaces/Delete/<%= p.id %>">Delete</button>
+              <a role="button" class="btn btn-sm btn-warning" href="/CreatePlace/<%= p.id %>">Changer</a>
+              <button class="btn btn-sm btn-danger" formaction="/MyPlaces/Delete/<%= p.id %>">Supprimer</button>
             </td>
           </tr>
 
@@ -42,10 +42,10 @@
               </td>
 
               <td class="text-center fs-15">
-                <p class="mb-2 mt-2"><%= app.applicant.name %> submitted an application.</p>
+                <p class="mb-2 mt-2"><%= app.applicant.name %> a postulé.</p>
                 <% if app.applicant.job_title.present? %>
                   <span class="d-inline-block">
-                    <i>Job Title:</i> <b><%= app.applicant.job_title %></b>
+                    <i>Profession:</i> <b><%= app.applicant.job_title %></b>
                   </span>
                 <% end %>
                 <% if app.details.present? %>

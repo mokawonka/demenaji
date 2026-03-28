@@ -41,7 +41,7 @@ $("#placeFavorite").click(function(e) {
         {   
             $t.toggleClass("fa-plus fa-heart");
 
-            var ptext = $t.hasClass("fa-plus") ? "Favori" : "En Favori";
+            var ptext = $t.hasClass("fa-plus") ? "Favori" : "Favori";
             document.getElementById("placeFavText").innerHTML = ptext;
         },
         error: function () {

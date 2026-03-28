@@ -1075,7 +1075,6 @@ table tr:first-child > td {
 
 .watermark
 {
-  /* position: fixed; */
   text-align: center;
   padding-top: 150px;
   padding-left: 0;

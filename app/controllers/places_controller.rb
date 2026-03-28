@@ -9,11 +9,17 @@ class PlacesController < ApplicationController
     when 'Area'
       render partial: 'partial_list', locals: { selected_places: selected_places_from_lookup }
     when 'AddFavorite'
-      toggle_favorite(true, params[:favid])
-      head :ok
+      if toggle_favorite(true, params[:favid])
+        head :ok
+      else
+        head :unauthorized
+      end
     when 'RemoveFavorite'
-      toggle_favorite(false, params[:favid])
-      head :ok
+      if toggle_favorite(false, params[:favid])
+        head :ok
+      else
+        head :unauthorized
+      end
     else
       head :unprocessable_entity
     end
@@ -41,10 +47,10 @@ class PlacesController < ApplicationController
       head :ok
     else
       if @place.user_id == current_user.id
-        flash[:alert] = 'You cannot apply to your own place.'
+        flash[:alert] = 'Vous ne pouvez pas postuler à votre annonce.'
         redirect_to place_path(@place)
       elsif Application.exists?(place_id: @place.id, applicant_id: current_user.id)
-        flash[:notice] = 'You have already applied to this place.'
+        flash[:notice] = 'Vous avez déjà postulé à cette annonce.'
         redirect_to place_path(@place)
       else
         redirect_to apply_path(@place)
@@ -157,15 +163,19 @@ class PlacesController < ApplicationController
     end
   end
 
+  
   def toggle_favorite(add, raw_place_id)
+    return false unless signed_in?
+    
     place = Place.find_by(id: raw_place_id)
-    return unless place
+    return false unless place
 
     if add
       Favorite.find_or_create_by!(user_id: current_user.id, place_id: place.id)
     else
       Favorite.where(user_id: current_user.id, place_id: place.id).delete_all
     end
+    true
   end
   
 end

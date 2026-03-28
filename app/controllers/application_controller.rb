@@ -12,8 +12,13 @@ class ApplicationController < ActionController::Base
   end
 
   def require_login
-    return if signed_in?
-
-    redirect_to login_path
+    unless signed_in?
+      if request.xhr?
+        head :unauthorized
+      else
+        redirect_to login_path
+      end
+    end
   end
+
 end
