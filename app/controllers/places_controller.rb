@@ -25,8 +25,6 @@ class PlacesController < ApplicationController
     end
   end
 
-
-
   def show
     if !signed_in? || current_user.id != @place.user_id
       @place.increment!(:visitor_count)
@@ -34,8 +32,6 @@ class PlacesController < ApplicationController
     @is_faved = signed_in? && Favorite.exists?(user_id: current_user.id, place_id: @place.id)
     @user_is_owner = signed_in? && current_user.id == @place.user_id
   end
-
-
 
   def post_handler
     case params[:handler]
@@ -58,20 +54,17 @@ class PlacesController < ApplicationController
     end
   end
 
-
-
   def new
     if params[:id].present?
       @place = Place.find_by(id: params[:id])
       if @place.nil? || @place.user_id != current_user.id
+        flash[:alert] = 'Annonce introuvable ou accès non autorisé.'
         redirect_to(create_place_path) and return
       end
     else
       @place = Place.new
     end
   end
-
-
 
   def create
     @place = current_user.places.build(place_params)
@@ -81,66 +74,85 @@ class PlacesController < ApplicationController
     @place.visitor_count = 0
 
     if @place.save
-      persist_uploaded_images(@place)
-      flash[:notice] = 'Place successfully added.'
-      redirect_to create_place_path(id: @place.id)
+      image_errors = persist_uploaded_images(@place)
+      flash[:notice] = 'Annonce ajoutée avec succès.'
+      flash[:alert] = image_errors.join(' ') if image_errors.any?
+      redirect_to place_path(id: @place.id)
     else
+      flash.now[:alert] = @place.errors.full_messages.join(', ')
       render :new, status: :unprocessable_entity
     end
   end
 
-
-
   def update
-    return redirect_to(create_place_path) unless @place.user_id == current_user.id
+    unless @place.user_id == current_user.id
+      flash[:alert] = 'Vous n\'êtes pas autorisé à modifier cette annonce.'
+      return redirect_to(create_place_path)
+    end
 
     if @place.update(place_params)
       @place.place_pictures.destroy_all if params[:picture_files].present?
-      persist_uploaded_images(@place)
-      flash[:notice] = 'Changes saved.'
-      redirect_to create_place_path(id: @place.id)
+      image_errors = persist_uploaded_images(@place)
+      flash[:notice] = 'Modifications enregistrées.'
+      flash[:alert] = image_errors.join(' ') if image_errors.any?
+      redirect_to place_path(id: @place.id)
     else
+      flash.now[:alert] = @place.errors.full_messages.join(', ')
       @place = Place.find(@place.id)
       render :new, status: :unprocessable_entity
     end
   end
 
-
-
   def destroy
-    @place.destroy if @place.user_id == current_user.id
+    if @place.user_id == current_user.id
+      @place.destroy
+      flash[:notice] = 'Annonce supprimée.'
+    else
+      flash[:alert] = 'Vous n\'êtes pas autorisé à supprimer cette annonce.'
+    end
     redirect_to my_places_path
   end
-
-
 
   private
 
   def set_place
     @place = Place.includes(:place_pictures, :user).find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    flash[:alert] = 'Annonce introuvable.'
+    redirect_to root_path
   end
 
   def place_params
     params.require(:place).permit(:address, :gps_latitude, :gps_longitude, :rent, :bedrooms, :description)
   end
 
-
+  # Returns an array of error strings (empty if all images were fine)
   def persist_uploaded_images(place)
-    return unless params[:picture_files].present?
+    errors = []
+    return errors unless params[:picture_files].present?
 
     Array(params[:picture_files]).each_with_index do |file, i|
-      next unless file.content_type&.start_with?('image/')
-
-      if file.size > 8.megabytes
-        flash.now[:alert] ||= "One or more images are too big (max 8MB)"
+      unless file.content_type&.start_with?('image/')
+        errors << "Fichier #{i + 1} ignoré : format non supporté."
         next
       end
 
-      place_picture = place.place_pictures.create!(pic_order: i)
-      place_picture.picture.attach(file)
-    end
-  end
+      if file.size > 8.megabytes
+        errors << "Fichier #{i + 1} ignoré : dépasse 8 Mo."
+        next
+      end
 
+      begin
+        place_picture = place.place_pictures.create!(pic_order: i)
+        place_picture.picture.attach(file)
+      rescue => e
+        errors << "Erreur lors de l'enregistrement de la photo #{i + 1}."
+        Rails.logger.error("Image attach failed: #{e.message}")
+      end
+    end
+
+    errors
+  end
 
   def selected_places_from_lookup
     payload = JSON.parse(params[:lookuparea] || '{}')
@@ -149,21 +161,20 @@ class PlacesController < ApplicationController
     zoom = params[:zoom].to_f
 
     per_page = case zoom
-              when 15.0..     then 1000
-              when 13.0...15  then 800
-              when 11.0...13  then 500
-              when 9.0...11   then 300
-              else 150
-              end
+               when 15.0..     then 1000
+               when 13.0...15  then 800
+               when 11.0...13  then 500
+               when 9.0...11   then 300
+               else 150
+               end
 
     places = Place
       .where(gps_longitude: sw[0]..ne[0])
       .where(gps_latitude: sw[1]..ne[1])
-      .includes(:place_pictures)           
+      .includes(:place_pictures)
       .order(post_date: :desc)
       .limit(per_page)
 
-    # Count can be slow on large tables → approximate it or remove if not needed
     total = Place
       .where(gps_longitude: sw[0]..ne[0])
       .where(gps_latitude: sw[1]..ne[1])
@@ -180,11 +191,10 @@ class PlacesController < ApplicationController
       per_page: per_page
     }
   end
-  
-  
+
   def toggle_favorite(add, raw_place_id)
     return false unless signed_in?
-    
+
     place = Place.find_by(id: raw_place_id)
     return false unless place
 
@@ -195,5 +205,4 @@ class PlacesController < ApplicationController
     end
     true
   end
-  
 end
