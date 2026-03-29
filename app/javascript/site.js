@@ -531,7 +531,7 @@ var inputAddress = $('#search-input').mapboxAutocomplete({
     accessToken: mapboxgl.accessToken,
     endpoint: 'https://api.mapbox.com/geocoding/v5/',
     mode: 'mapbox.places',
-    types: 'address',
+    types: 'address,place,locality',
     countries: 'dz',
     language: 'fr',
     width: '100%',

@@ -148,29 +148,22 @@ class PlacesController < ApplicationController
     sw = payload['swbb'] || [-180, -90]
     zoom = params[:zoom].to_f
 
-    Rails.logger.info "ZOOM RECEIVED: #{zoom.round(2)}"
-
-    # More ads when zoomed IN (inside a city)
-    per_page =
-      if zoom >= 15.0          # very close (street level)
-        1000
-      elsif zoom >= 13.0       # city / neighborhood
-        800
-      elsif zoom >= 11.0       # larger city or region
-        500
-      elsif zoom >= 9.0        # multiple cities
-        300
-      else                     # national / very zoomed out
-        150
-      end
+    per_page = case zoom
+              when 15.0..     then 1000
+              when 13.0...15  then 800
+              when 11.0...13  then 500
+              when 9.0...11   then 300
+              else 150
+              end
 
     places = Place
       .where(gps_longitude: sw[0]..ne[0])
       .where(gps_latitude: sw[1]..ne[1])
-      .includes(:place_pictures)
+      .includes(:place_pictures)           
       .order(post_date: :desc)
       .limit(per_page)
 
+    # Count can be slow on large tables → approximate it or remove if not needed
     total = Place
       .where(gps_longitude: sw[0]..ne[0])
       .where(gps_latitude: sw[1]..ne[1])
