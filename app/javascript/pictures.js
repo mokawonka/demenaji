@@ -1,11 +1,10 @@
 
-document.addEventListener('turbo:load', function () {
-    const dropzone = document.getElementById('dropzone');
-    const fileInput = document.getElementById('file-upload');
-    const previewContainer = document.getElementById('image-preview');
-    const fileCountEl = document.getElementById('file-count');
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('file-upload');
+const previewContainer = document.getElementById('image-preview');
+const fileCountEl = document.getElementById('file-count');
 
-    if (!dropzone || !fileInput) return;
+if (dropzone && fileInput) {
 
     let filesArray = [];
 
@@ -94,4 +93,5 @@ document.addEventListener('turbo:load', function () {
             renderPreviews();
         }
     });
-});
+
+}

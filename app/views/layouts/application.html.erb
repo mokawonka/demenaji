@@ -56,17 +56,43 @@
     </header>
 
     <main id="main" role="main" class="pb-5">
-      <% if flash[:notice] %><div class="container pt-4"><p class="fs-17"><%= flash[:notice] %></p></div><% end %>
-      <% if flash[:alert] %><div class="container pt-4"><p class="fs-17 text-danger"><%= flash[:alert] %></p></div><% end %>
+
+      <% if flash.any? %>
+        <div id="flash-container" class="position-fixed top-0 start-50 translate-middle-x w-100" style="z-index: 1050; pointer-events: none;">
+          <div class="d-flex flex-column align-items-center mt-3">
+            <% flash.each do |type, message| %>
+              <% color = case type
+                when 'notice'  then 'success'
+                when 'alert'   then 'danger'
+                when 'error'   then 'danger'
+                when 'warning' then 'warning'
+                when 'info'    then 'info'
+                else 'secondary'
+              end %>
+
+              <div class="alert alert-<%= color %> alert-dismissible fade show" role="alert" style="pointer-events: auto; min-width: 300px;">
+                <%= message %>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+
       <% if content_for?(:mainpage) %>
         <%= yield :mainpage %>
       <% else %>
-        <div class="container"><%= yield %></div>
+        <div class="container">
+          <%= yield %>
+        </div>
       <% end %>
     </main>
 
     <footer class="text-center border-top footer text-muted fixed-bottom">
-      <small>&copy; 2026 - Demenaji </small>
+      <small>&copy; Demenaji <%= Time.current.year %></small>
     </footer>
 
     <%= javascript_include_tag "jquery.min", "data-turbo-track": "reload" %>

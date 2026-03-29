@@ -73,6 +73,10 @@
     <div class="col-md-6 col-lg-8 d-none d-md-block">
       <div id="placesPin">
         <div id="map"></div>
+        <div id="map-offline" style="display:none;">
+            <i class="fa-solid fa-wifi" style="font-size:32px; color:#ccc; margin-bottom:16px;"></i>
+            <p style="color:#aaa; font-weight:100; font-size:17px;">Vous n'êtes pas connecté à internet.</p>
+        </div>
         <div id="addbutton" class="overlay">
           <a href="<%= create_place_path %>" class="fab-btn" aria-label="Add place">
             <i class="fa fa-plus"></i>

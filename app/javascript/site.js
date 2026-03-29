@@ -1,4 +1,5 @@
-var maxListSize = 200;
+var isLoadingPlaces = false;
+var lastLoadedZoom = 11;
 var RENT_MAX = 200000;
 var HighestFirst = false;
 var UpRange = RENT_MAX;
@@ -13,6 +14,10 @@ var viewedList = [];
 var map = null;
 var admap = null;
 var ul = document.getElementById("ulist");
+var ALGERIA_BOUNDS = [
+    [-8.67, 18.97],   // Southwest corner (lng, lat)
+    [12.00, 37.12]    // Northeast corner (lng, lat)
+];
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////// PLACE //////////////////////////////////////////////////////////
@@ -45,7 +50,7 @@ $("#placeFavorite").click(function(e) {
             document.getElementById("placeFavText").innerHTML = ptext;
         },
         error: function () {
-            console.log("not working");
+            console.log("disconnected");
         }
     });
 });
@@ -77,7 +82,7 @@ $(document).on("click", ".heart", function(e) {
             $t.toggleClass("fa-solid fa-regular");
         },
         error: function() {
-            console.log("not working");
+            console.log("disconnected");
         }
     });
 });
@@ -220,67 +225,101 @@ function updatePreview()
 ///////////////
 function updateMap()
 {
-    //clearing all previous features
-    showedFeatures= [];
+    showedFeatures = [];
 
     try
     {    
-        var li = viewedList; //ul.getElementsByTagName('li');
-
+        var li = viewedList;
         var ll = li.length;
         for (i = 0; i < ll; i++)
         {
-            var rent = li[i].getElementsByTagName("h5")[0].textContent;
-            var type = li[i].getElementsByTagName("p")[0].textContent;    // 1rst <p>
-            var rawlong = li[i].getElementsByTagName("p")[1].textContent; // 2nd  <p>
-            var rawlat = li[i].getElementsByTagName("p")[2].textContent;  // 3rd  <p>
-            var rawid = li[i].getElementsByTagName("p")[3].textContent;   // 4th  <p>
+            var rent    = li[i].getElementsByTagName("h5")[0].textContent;
+            var type    = li[i].getElementsByTagName("p")[0].textContent;
+            var rawlong = li[i].getElementsByTagName("p")[1].textContent;
+            var rawlat  = li[i].getElementsByTagName("p")[2].textContent;
+            var rawid   = li[i].getElementsByTagName("p")[3].textContent;
             var adlocation = [parseFloat(rawlong), parseFloat(rawlat)];
 
-            var feature = { "type": "Feature", "geometry": { "type": "Point", "coordinates": adlocation }, "properties": {"name": rawid, "rent": rent, "placetype": type} }
+            var feature = {
+                "type": "Feature",
+                "geometry": { "type": "Point", "coordinates": adlocation },
+                "properties": { "name": rawid, "rent": rent, "placetype": type }
+            };
 
-            if(li[i].style.display != "none")
-            {
-                showedFeatures.push(feature);                 
+            if (li[i].style.display != "none") {
+                showedFeatures.push(feature);
             }
         }
 
-        var mapdata = { "type": "FeatureCollection", "features": showedFeatures }
+        var mapdata = { "type": "FeatureCollection", "features": showedFeatures };
 
-        map.loadImage(window.defaultIconUrl, function(error, image){
-            if (error) throw error;
-            if(!map.hasImage("default-marker")){
-                map.addImage("default-marker", image);
-            }
-            
-            if (!map.getLayer('places')) {
-                map.addLayer({
-                    "id": "places",
-                    "type": "symbol",
-                    "source": {
-                        "type": "geojson",
-                        "data": mapdata
-                    },
-                    'paint':{
-                        "icon-opacity": 1,
-                        "icon-opacity-transition": {
-                            "duration": 0,
-                            "delay": 0
-                        }
-                    },
-                    'layout': {
-                        "icon-image": "default-marker",
-                        "icon-allow-overlap": true,
-                        "icon-size":  1,
-                        "icon-offset": [0, -20]
-                    }
+        if (!map.getSource('places')) {
+            map.addSource('places', {
+                type: 'geojson',
+                data: mapdata,
+                cluster: true,
+                clusterMaxZoom: 22,
+                clusterRadius: 40
+            });
+
+            map.addLayer({
+                id: 'clusters',
+                type: 'circle',
+                source: 'places',
+                filter: ['has', 'point_count'],
+                paint: {
+                    'circle-color': '#17a2b8',
+                    'circle-radius': [
+                        'step', ['get', 'point_count'],
+                        18, 10, 24, 50, 30
+                    ],
+                    'circle-opacity': 0.85
+                }
+            });
+
+            map.addLayer({
+                id: 'cluster-count',
+                type: 'symbol',
+                source: 'places',
+                filter: ['has', 'point_count'],
+                layout: {
+                    'text-field': '{point_count_abbreviated}',
+                    'text-size': 13,
+                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold']
+                },
+                paint: { 'text-color': '#ffffff' }
+            });
+
+            map.addLayer({
+                id: 'places',
+                type: 'symbol',
+                source: 'places',
+                filter: ['!', ['has', 'point_count']],
+                layout: {
+                    'icon-image': 'default-marker',
+                    'icon-allow-overlap': true,
+                    'icon-size': 1,
+                    'icon-offset': [0, -20]
+                }
+            });
+
+            map.on('click', 'clusters', function(e) {
+                var features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+                var clusterId = features[0].properties.cluster_id;
+                map.getSource('places').getClusterExpansionZoom(clusterId, function(err, zoom) {
+                    if (err) return;
+                    map.easeTo({ center: features[0].geometry.coordinates, zoom: zoom });
                 });
-            }
-            else map.getSource('places').setData(mapdata);
-        });
-        
+            });
+
+            map.on('mouseenter', 'clusters', function() { map.getCanvas().style.cursor = 'pointer'; });
+            map.on('mouseleave', 'clusters', function() { map.getCanvas().style.cursor = ''; });
+
+        } else {
+            map.getSource('places').setData(mapdata);
+        }
     }
-    catch(error){}
+    catch(error) { console.log("updateMap error:", error.message); }
 }
 
 //////////////
@@ -297,32 +336,46 @@ function inbounds(loc, ne, sw){
 ////////////////////////// 
 function LoadPlacesFromServer(polygon)
 {
+    if (isLoadingPlaces) return;
+    isLoadingPlaces = true;
+
+    $("#ulist").css("opacity", "0.6");   // visual feedback
+
+    var zoom = map.getZoom();
+
     var turfBB = turf.polygon([polygon]);
     var largerTurfBB = turf.transformScale(turfBB, lookupAreaSize);
     lookupArea = largerTurfBB.geometry.coordinates[0];
-    // lookupArea[0] = NW, [1] = NE, [2] = SE, [3] = SW, [4] = NW (closing point)
 
     $.ajax({
         type: 'POST',
         url: '/Map?handler=Area',
         data: {
             lookuparea: JSON.stringify({
-                "nebb" : lookupArea[1],  // NE = maxLng, maxLat
-                "swbb" : lookupArea[3]   // SW = minLng, minLat
-            })
+                "nebb": lookupArea[1],
+                "swbb": lookupArea[3]
+            }),
+            zoom: zoom,
+            page: 1
         },
-        dataType: "html",
+        dataType: "json",
         headers: {
             'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
         },
         success: function(response) {
-            $("#ulist").html(response);
+            $("#ulist").html(response.html);
             $('[data-toggle="tooltip"]').tooltip();
             update();
+            lastLoadedZoom = zoom;
         },
-        error: function() {}
+        error: function() { console.log("Load failed"); },
+        complete: function() {
+            isLoadingPlaces = false;
+            $("#ulist").css("opacity", "1");
+        }
     });
 }
+
 
 ///////////////
 // updateImp //
@@ -427,13 +480,10 @@ function updateImp(lrent, urent, beds_selection)
             else return HighestFirst ? -1 : 1;
         });
 
-        var ll = viewedList.length;
-        for (i = maxListSize; i < ll; i++) viewedList[i].style.display = "none";
-        viewedList = viewedList.slice(0, maxListSize);
-
         $.each(viewedList, function(i, lii){
             ul.append(lii); /* This removes li from the old spot and moves it */
         });
+
     }
     catch(error){    
         console.log("ERROR:", error.message, error.stack);
@@ -627,10 +677,11 @@ if($("#map").length != 0)
         attributionControl: false,
         container: 'map',
         style: mapStyleUrl,
-        // Default to Algiers, Algeria.
-        center: [3.0588, 36.7538],
-        zoom: 11
-        // No custom min/max zoom constraints; allow Mapbox defaults.
+        center: [3.0588, 36.7538],   // Center on Algiers
+        zoom: 11,
+        maxBounds: ALGERIA_BOUNDS,   // ← THIS RESTRICTS THE MAP TO ALGERIA
+        minZoom: 5.5,                // Optional: prevents extreme zoom out (good UX)
+        maxZoom: 18                  // Optional: prevents too much zoom in
     });
 
     map.dragRotate.disable();
@@ -643,31 +694,53 @@ if($("#map").length != 0)
     {
         if(window.location.search.includes("location")) geolocate.trigger();
 
+        var moveTimeout;
+
         map.on('moveend', function()
         {
-            // Pulling places from server
-            bb   = map.getBounds();
-            nwbb = bb.getNorthWest().toArray();
-            nebb = bb.getNorthEast().toArray();
-            sebb = bb.getSouthEast().toArray();
-            swbb = bb.getSouthWest().toArray();
-            
-            if(!inbounds(nwbb, lookupArea[1], lookupArea[3]) || 
-            !inbounds(nebb, lookupArea[1], lookupArea[3]) || 
-            !inbounds(sebb, lookupArea[1], lookupArea[3]) || 
-            !inbounds(swbb, lookupArea[1], lookupArea[3]) )
-            {
-                // if current bounding box goes outside lookupArea, then update lookup Area
-                LoadPlacesFromServer([nwbb, nebb, sebb, swbb, nwbb]);
-            }
-            else
-            {
-                // filtering preview list locally only
-                update(); 
-            }      
+            clearTimeout(moveTimeout);
+
+            moveTimeout = setTimeout(() => {
+
+                bb   = map.getBounds();
+                nwbb = bb.getNorthWest().toArray();
+                nebb = bb.getNorthEast().toArray();
+                sebb = bb.getSouthEast().toArray();
+                swbb = bb.getSouthWest().toArray();
+
+                var currentPolygon = [nwbb, nebb, sebb, swbb, nwbb];
+                var currentZoom = map.getZoom();
+
+                if (!lookupArea) {
+                    LoadPlacesFromServer(currentPolygon);
+                    return;
+                }
+
+                var stillCovered = inbounds(nwbb, lookupArea[1], lookupArea[3]) &&
+                                   inbounds(nebb, lookupArea[1], lookupArea[3]) &&
+                                   inbounds(sebb, lookupArea[1], lookupArea[3]) &&
+                                   inbounds(swbb, lookupArea[1], lookupArea[3]);
+
+                // Reload when zooming in significantly (to get more local ads)
+                var zoomedInSignificantly = currentZoom > lastLoadedZoom + 0.7;
+
+                var needsReload = !stillCovered || zoomedInSignificantly;
+
+                if (needsReload) {
+                    LoadPlacesFromServer(currentPolygon);
+                } else {
+                    update();   // just client-side filter
+                }
+
+            }, 450);   // higher debounce = smoother zoom/pan
         });
 
 
+        // load images once at startup
+        map.loadImage(window.defaultIconUrl, function(error, image) {
+            if (error) throw error;
+            if (!map.hasImage("default-marker")) map.addImage("default-marker", image);
+        });
 
         map.loadImage(window.redIconUrl, function(error, image){
             if (error) throw error;
@@ -793,6 +866,38 @@ if($("#map").length != 0)
             changeButton("#4bed", 4);
             update();
         });
+    });
+
+    map.on('error', function(e) {
+        if (!navigator.onLine) {
+            document.getElementById('map').style.display = 'none';
+            document.getElementById('map-offline').style.display = 'flex';
+        }
+    });
+
+    window.addEventListener('offline', function() {
+        document.getElementById('map').style.display = 'none';
+        document.getElementById('map-offline').style.display = 'flex';
+    });
+
+    window.addEventListener('online', function() {
+        document.getElementById('map').style.display = 'block';
+        document.getElementById('map-offline').style.display = 'none';
+
+        if (map) {
+            map.setStyle(window.mapboxStyleUrl);
+
+            map.once('styledata', function() {
+                initArea = true;
+                lookupArea = null;
+                bb   = map.getBounds();
+                nwbb = bb.getNorthWest().toArray();
+                nebb = bb.getNorthEast().toArray();
+                sebb = bb.getSouthEast().toArray();
+                swbb = bb.getSouthWest().toArray();
+                LoadPlacesFromServer([nwbb, nebb, sebb, swbb, nwbb]);
+            });
+        }
     });
 }
 

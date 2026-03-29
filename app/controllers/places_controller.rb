@@ -7,19 +7,19 @@ class PlacesController < ApplicationController
   def map_handler
     case params[:handler]
     when 'Area'
-      render partial: 'partial_list', locals: { selected_places: selected_places_from_lookup }
+      result = selected_places_from_lookup
+      html = render_to_string partial: 'partial_list',
+                              locals: { selected_places: result[:places] }
+      render json: {
+        html: html,
+        total: result[:total],
+        page: result[:page],
+        per_page: result[:per_page]
+      }
     when 'AddFavorite'
-      if toggle_favorite(true, params[:favid])
-        head :ok
-      else
-        head :unauthorized
-      end
+      toggle_favorite(true, params[:favid]) ? head(:ok) : head(:unauthorized)
     when 'RemoveFavorite'
-      if toggle_favorite(false, params[:favid])
-        head :ok
-      else
-        head :unauthorized
-      end
+      toggle_favorite(false, params[:favid]) ? head(:ok) : head(:unauthorized)
     else
       head :unprocessable_entity
     end
@@ -146,23 +146,48 @@ class PlacesController < ApplicationController
     payload = JSON.parse(params[:lookuparea] || '{}')
     ne = payload['nebb'] || [180, 90]
     sw = payload['swbb'] || [-180, -90]
+    zoom = params[:zoom].to_f
+
+    Rails.logger.info "ZOOM RECEIVED: #{zoom.round(2)}"
+
+    # More ads when zoomed IN (inside a city)
+    per_page =
+      if zoom >= 15.0          # very close (street level)
+        1000
+      elsif zoom >= 13.0       # city / neighborhood
+        800
+      elsif zoom >= 11.0       # larger city or region
+        500
+      elsif zoom >= 9.0        # multiple cities
+        300
+      else                     # national / very zoomed out
+        150
+      end
 
     places = Place
       .where(gps_longitude: sw[0]..ne[0])
       .where(gps_latitude: sw[1]..ne[1])
       .includes(:place_pictures)
-      .limit(200)
+      .order(post_date: :desc)
+      .limit(per_page)
 
-    puts "#{places.count}\n" *20
+    total = Place
+      .where(gps_longitude: sw[0]..ne[0])
+      .where(gps_latitude: sw[1]..ne[1])
+      .count
 
-    places.map do |place|
-      {
-        place: place,
-        is_faved: signed_in? && Favorite.exists?(user_id: current_user.id, place_id: place.id)
-      }
-    end
+    {
+      places: places.map { |place|
+        {
+          place: place,
+          is_faved: signed_in? && Favorite.exists?(user_id: current_user.id, place_id: place.id)
+        }
+      },
+      total: total,
+      per_page: per_page
+    }
   end
-
+  
   
   def toggle_favorite(add, raw_place_id)
     return false unless signed_in?

@@ -54,23 +54,22 @@
               </td>
 
               <td class="text-center fs-15">
-                <span class="badge badge-primary">
-                  <%= case app.status
-                      when 0, -2 then 'Declined'
-                      when 1     then 'Invited'
-                      when 2     then 'Payment requested'
-                      else            'Waiting for action'
-                      end %>
+                <% badge_class, label = case app.status
+                  when -1      then ['badge-primary', 'En attente']
+                  when 0, -2   then ['badge-danger',  'Refusé']
+                  when 1       then ['badge-warning',  'Invité']
+                  else              ['badge-secondary', 'Inconnu']
+                end %>
+                <span class="badge badge-pill <%= badge_class %>" style="font-size: 13px; padding: 7px 14px;">
+                    <%= label %>
                 </span>
               </td>
 
               <td class="text-center">
                 <button formaction="/MyPlaces/Invite/<%= p.id %>/<%= app.id %>"
-                        class="btn btn-sm btn-outline-info">Invite</button>
+                        class="btn btn-sm btn-outline-info">Inviter</button>
                 <button formaction="/MyPlaces/Decline/<%= p.id %>/<%= app.id %>"
-                        class="btn btn-sm btn-outline-danger">Decline</button>
-                <button formaction="/MyPlaces/RequestPayment/<%= p.id %>/<%= app.id %>"
-                        class="btn btn-sm btn-outline-success">Request Payment</button>
+                        class="btn btn-sm btn-outline-danger">Refuser</button>
               </td>
             </tr>
           <% end %>

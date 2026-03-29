@@ -1,11 +1,11 @@
 <h2 class="title">
-  My Applications
+  Mes demandes
   <%= image_tag 'img_apps.png', class: 'mt-3 mb-5 float-right' %>
 </h2>
 
 <% if @applications.empty? %>
   <div class="container watermark">
-    <span class="fs-20">You haven't applied to any place yet.</span>
+    <span class="fs-20">Vous n'avez postulé pour aucune annonce pour l'instant.</span>
   </div>
 
 <% else %>
@@ -24,24 +24,23 @@
               <% if item.place %>
                 <a href="/Place/<%= item.place.id %>"><b><%= item.place.address %></b></a>
               <% else %>
-                <i class="fs-17">Deleted by user</i>
+                <i class="fs-17">Annonce supprimée</i>
               <% end %>
             </td>
 
             <td class="text-center">
               <span class="badge badge-primary">
                 <%= case item.status
-                    when 0, -2 then 'Declined'
-                    when 1     then 'Invited'
-                    when 2     then 'Payment requested'
-                    else            'In progress'
+                    when 0, -2 then 'Refusé'
+                    when 1     then 'Invité'
+                    else            'En cours'
                     end %>
               </span>
             </td>
 
             <td class="text-center">
               <button formaction="/MyApplications/Delete/<%= item.id %>"
-                      class="btn btn-sm btn-danger">Delete</button>
+                      class="btn btn-sm btn-danger">Supprimer</button>
             </td>
           </tr>
         <% end %>
