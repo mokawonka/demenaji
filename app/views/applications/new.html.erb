@@ -1,57 +1,188 @@
-<% content_for :title, "Applying To #{@place.address}" %>
+<% content_for :title, "Postuler à #{@place.address}" %>
 
-<h2>Postuler à <%= @place.address %></h2>
+<div class="container" style="max-width: 600px; padding-top: 40px; padding-bottom: 100px;">
 
-<form method="post" action="/Apply/<%= @place.id %>">
-  <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+  <h2 class="title" style="margin-bottom: 8px;">Postuler à <%= @place.address %></h2>
+  <p class="fs-12d" style="margin-bottom: 40px;">Modifiez votre profil et complétez votre candidature</p>
 
-  <div class="container">
-    <div class="row">
+  <%= form_with url: "/Apply/#{@place.id}", method: :post, multipart: true do |f| %>
 
-      <!-- Form Fields -->
-      <div class="col-md-8">
-        <div class="container">
+    <%# ── Profile picture ── %>
+    <div style="display:flex; flex-direction:column; align-items:center; margin-bottom:40px;">
+      <div style="position:relative; display:inline-block;">
 
-          <!-- Job Title -->
-          <div class="row form-group">
-            <div class="fs-15 col-md-4 control-label">
-              <label class="float-right">Profession</label>
-            </div>
-            <div class="col-md-4">
-              <input name="job_title"
-                     class="form-control"
-                     value="<%= current_user.job_title %>">
-            </div>
+        <% if current_user.profile_picture.attached? %>
+          <%= image_tag current_user.profile_picture,
+                id: "imagePreview",
+                style: "width:150px; height:150px; border-radius:50%; object-fit:cover;
+                        border:4px solid #f3f2f2; box-shadow:0 2px 12px rgba(0,0,0,0.10);" %>
+        <% else %>
+          <div id="imagePreview"
+               style="width:120px; height:120px; border-radius:50%; background:#f0f0f0;
+                      border:4px solid #f3f2f2; box-shadow:0 2px 12px rgba(0,0,0,0.10);
+                      display:flex; align-items:center; justify-content:center;">
+            <i class="fa fa-user" style="font-size:48px; color:#ccc;"></i>
           </div>
+        <% end %>
 
-          <!-- Details -->
-          <div class="container">
-            <span class="fw-100"> ?</span>
-            <div class="container">
-              <div class="row form-group">
-                <div class="col-md-8">
-                  <textarea name="details"
-                            rows="3"
-                            class="form-control"></textarea>
-                </div>
-              </div>
-            </div>
-          </div>
+        <label for="profile_picture_upload"
+               style="position:absolute; bottom:4px; right:4px; width:32px; height:32px;
+                      border-radius:50%; background:#ff8138; color:white; cursor:pointer;
+                      display:flex; align-items:center; justify-content:center;
+                      box-shadow:0 2px 6px rgba(255,129,56,0.4);">
+          <i class="fa fa-camera" style="font-size:13px;"></i>
+        </label>
+        <%= file_field_tag "user[profile_picture]",
+              id: "profile_picture_upload",
+              accept: "image/jpeg,image/png,image/webp",
+              style: "display:none;" %>
+      </div>
+      <p class="fs-12d" style="margin-top:10px;"><%= current_user.name %></p>
+    </div>
 
+    <%# ── All editable fields ── %>
+    <div style="background:white; border-radius:14px; padding:24px;
+                border:1px solid #f0f0f0; margin-bottom:24px;">
+
+      <%# Profile information (editable) %>
+      <div class="form-group">
+        <label class="fs-12d" style="text-align:left; margin-bottom:6px; display:block;">
+          Nom complet
+        </label>
+        <%= text_field_tag "user[name]",
+              current_user.name,
+              placeholder: "Votre nom",
+              class: "form-control orangeinput",
+              style: "border-radius:10px;" %>
+      </div>
+
+      <div class="form-group">
+        <label class="fs-12d" style="text-align:left; margin-bottom:6px; display:block;">
+          Adresse e-mail
+        </label>
+        <%= email_field_tag "user[email]",
+              current_user.email,
+              placeholder: "votre@email.com",
+              class: "form-control orangeinput",
+              style: "border-radius:10px;" %>
+      </div>
+
+      <div class="form-group">
+        <label class="fs-12d" style="text-align:left; margin-bottom:6px; display:block;">
+          Profession / Activité
+        </label>
+        <%= text_field_tag "user[job_title]",
+              current_user.job_title,
+              placeholder: "ex: Agent immobilier, Étudiant...",
+              class: "form-control orangeinput",
+              style: "border-radius:10px;" %>
+      </div>
+
+      <div class="form-group">
+        <label class="fs-12d" style="text-align:left; margin-bottom:6px; display:block;">
+          Téléphone
+        </label>
+        <%= text_field_tag "user[phone_number]",
+              current_user.phone_number,
+              placeholder: "ex: 0555 00 00 00",
+              class: "form-control orangeinput",
+              style: "border-radius:10px;" %>
+      </div>
+
+      <hr style="margin: 28px 0; border-color: #f0f0f0;">
+
+      <%# Application-specific fields %>
+      <p class="fs-15b" style="margin-bottom: 18px; color:#333;">Informations pour votre candidature</p>
+
+      <div class="form-group">
+        <label class="fs-12d" style="text-align:left; margin-bottom:6px; display:block; font-size:15px;">
+          Statut matrimonial
+        </label>
+        <%= select_tag "marital_status",
+              options_for_select([
+                ["Célibataire", "Célibataire"],
+                ["Marié(e)", "Marié(e)"],
+                ["En couple", "En couple"],
+                ["Divorcé(e)", "Divorcé(e)"],
+                ["Veuf(ve)", "Veuf(ve)"],
+                ["Autre", "Autre"]
+              ], nil),
+              class: "form-control orangeinput",
+              style: "border-radius:10px;",
+              prompt: "Sélectionnez votre statut" %>
+      </div>
+
+      <div class="form-group">
+        <label class="fs-12d" style="text-align:left; margin-bottom:6px; display:block; font-size:15px;">
+          Téléphone de référence (ancien propriétaire, agences, etc...)
+        </label>
+        <%= text_field_tag "reference_phone",
+              nil,
+              placeholder: "ex: 0555 00 00 00",
+              class: "form-control orangeinput",
+              style: "border-radius:10px;" %>
+      </div>
+
+      <div class="form-group">
+        <label class="fs-12d" style="text-align:left; margin-bottom:6px; display:block; font-size:15px;">
+          Durée de location souhaitée (mois)
+        </label>
+        <%= number_field_tag "desired_rental_duration",
+              nil,
+              min: 1,
+              placeholder: "ex: 12",
+              class: "form-control orangeinput",
+              style: "border-radius:10px;" %>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 0;">
+        <label class="fs-12d" style="text-align:left; margin-bottom:8px; display:block; font-size:15px;">
+          Animaux de compagnie
+        </label>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <%= check_box_tag "has_pets", "1", false, style: "width:22px; height:22px; accent-color:#ff8138;" %>
+          <span class="fs-12d" style="font-size:15px;">Oui, j’ai des animaux</span>
         </div>
       </div>
 
-      <!-- Side Image -->
-      <div class="col-md-4">
-        <%= image_tag 'profile_recap.png', class: 'centerimage pb-5' %>
+      <div class="form-group" style="margin-top: 24px;">
+        <label class="fs-12d" style="text-align:left; margin-bottom:6px; display:block; font-size:15px;">
+          Détails / Message au propriétaire
+        </label>
+        <%= text_area_tag "details",
+              nil,
+              rows: 4,
+              placeholder: "Parlez un peu de vous, de votre situation, de vos motivations...",
+              class: "form-control orangeinput",
+              style: "border-radius:10px; resize:vertical;" %>
       </div>
 
     </div>
-  </div>
 
-  <!-- Submit -->
-  <div class="text-center pb-5">
-    <button type="submit" class="btn btn-submit btn-lg">Postuler</button>
-  </div>
+    <div class="text-center">
+      <%= submit_tag 'Postuler', class: 'btn btn-submit btn-lg',
+            style: 'border-radius:12px; min-width:180px;' %>
+    </div>
 
-</form>
+  <% end %>
+</div>
+
+<script>
+  document.getElementById('profile_picture_upload').addEventListener('change', function() {
+    if (!this.files || !this.files[0]) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var preview = document.getElementById('imagePreview');
+      if (preview.tagName === 'IMG') {
+        preview.src = e.target.result;
+      } else {
+        var img = document.createElement('img');
+        img.id = 'imagePreview';
+        img.src = e.target.result;
+        img.style.cssText = 'width:120px; height:120px; border-radius:50%; object-fit:cover; border:4px solid #f3f2f2; box-shadow:0 2px 12px rgba(0,0,0,0.10);';
+        preview.replaceWith(img);
+      }
+    };
+    reader.readAsDataURL(this.files[0]);
+  });
+</script>

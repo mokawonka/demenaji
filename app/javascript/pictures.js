@@ -1,4 +1,3 @@
-
 const dropzone = document.getElementById('dropzone');
 const fileInput = document.getElementById('file-upload');
 const previewContainer = document.getElementById('image-preview');
@@ -8,29 +7,50 @@ if (dropzone && fileInput) {
 
     let filesArray = [];
 
+    // Prevent label click from bubbling up to dropzone (stops double dialog)
+    const browseLabel = dropzone.querySelector('label');
+    if (browseLabel) {
+        browseLabel.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    }
+
     function renderPreviews() {
         previewContainer.innerHTML = '';
+
+        if (filesArray.length === 0) {
+            fileCountEl.textContent = '';
+            return;
+        }
+
         filesArray.forEach((file, index) => {
+            const div = document.createElement('div');
+            div.className = 'relative group';
+            div.style.cssText = 'position:relative;';
+            previewContainer.appendChild(div); // append immediately so order is preserved
+
             const reader = new FileReader();
             reader.onload = function (e) {
-                const div = document.createElement('div');
-                div.className = 'relative group';
                 div.innerHTML = `
                     <img src="${e.target.result}" 
-                        class="w-full aspect-square object-cover rounded-2xl shadow-sm border border-gray-200">
+                        style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:12px; border:1px solid #e5e7eb; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
                     <button type="button" 
                             data-index="${index}"
-                            class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm shadow transition-all opacity-0 group-hover:opacity-100">
+                            style="position:absolute; top:6px; right:6px; background:#ef4444; color:white;
+                                   width:22px; height:22px; border-radius:50%; border:none; cursor:pointer;
+                                   font-size:12px; display:flex; align-items:center; justify-content:center;
+                                   box-shadow:0 1px 4px rgba(0,0,0,0.2);">
                         ✕
                     </button>
-                    <div class="text-xs text-gray-500 mt-1 truncate">${file.name}</div>
+                    <div style="font-size:11px; color:#9ca3af; margin-top:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                        ${file.name}
+                    </div>
                 `;
-                previewContainer.appendChild(div);
             };
             reader.readAsDataURL(file);
         });
 
-        fileCountEl.textContent = `${filesArray.length} file${filesArray.length === 1 ? '' : 's'} selected`;
+        fileCountEl.textContent = `${filesArray.length} photo${filesArray.length === 1 ? '' : 's'} sélectionnée${filesArray.length === 1 ? '' : 's'}`;
     }
 
     function syncFilesToInput() {
@@ -39,30 +59,25 @@ if (dropzone && fileInput) {
         fileInput.files = dt.files;
     }
 
-    // === CLICK TO BROWSE ===
-    // Only trigger manually if the click was OUTSIDE the label
-    // (clicks on the label already open the dialog natively)
+    // === CLICK TO BROWSE (dropzone background only) ===
     dropzone.addEventListener('click', function (e) {
-        if (e.target.closest('label')) return;
+        if (e.target.closest('label') || e.target.closest('button')) return;
         fileInput.click();
+    });
+
+    // === FILE SELECTED ===
+    fileInput.addEventListener('change', function () {
+        const newFiles = Array.from(fileInput.files).filter(f => f.type.startsWith('image/'));
+        if (newFiles.length > 0) {
+            filesArray = [...filesArray, ...newFiles].slice(0, 10);
+            renderPreviews();
+        }
     });
 
     // === SYNC FILES ON SUBMIT ===
     const form = dropzone.closest('form');
     form.addEventListener('submit', function () {
         syncFilesToInput();
-    });
-
-    // === FILE SELECTED ===
-    fileInput.addEventListener('change', function (e) {
-        const newFiles = Array.from(e.target.files || []).filter(f => f.type.startsWith('image/'));
-
-        if (newFiles.length > 0) {
-            filesArray = [...filesArray, ...newFiles].slice(0, 10);
-            renderPreviews();
-        }
-
-        setTimeout(() => { fileInput.value = ''; }, 0);
     });
 
     // === DRAG & DROP ===
@@ -78,10 +93,11 @@ if (dropzone && fileInput) {
     dropzone.addEventListener('drop', (e) => {
         e.preventDefault();
         dropzone.style.borderColor = '';
-
         const newFiles = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
-        filesArray = [...filesArray, ...newFiles].slice(0, 10);
-        renderPreviews();
+        if (newFiles.length > 0) {
+            filesArray = [...filesArray, ...newFiles].slice(0, 10);
+            renderPreviews();
+        }
     });
 
     // === REMOVE IMAGE ===

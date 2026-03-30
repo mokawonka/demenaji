@@ -1,3 +1,5 @@
+# app/controllers/applications_controller.rb
+
 class ApplicationsController < ApplicationController
   before_action :require_login
 
@@ -12,35 +14,44 @@ class ApplicationsController < ApplicationController
   def create
     @place = Place.find(params[:place_id])
 
+    # ── Security checks ──
     if @place.user_id == current_user.id
-      flash[:alert] = 'You cannot apply to your own place.'
+      flash[:alert] = 'Vous ne pouvez pas postuler à votre propre annonce.'
       redirect_to place_path(@place)
       return
     end
 
     if Application.exists?(place_id: @place.id, applicant_id: current_user.id)
-      flash[:notice] = 'You have already applied to this place. Delete it from My Applications if needed.'
+      flash[:notice] = 'Vous avez déjà postulé à cette annonce.'
       redirect_to apply_path(@place)
       return
     end
 
+    # ── Update user profile (name, email, job, phone, picture) ──
+    if params[:user].present?
+      current_user.update(user_params)
+    end
+
+    # ── Create the application ──
     application = Application.new(
-      place_id: @place.id,
-      applicant_id: current_user.id,
-      details: params[:details],
-      status: -1,
-      creation_time: Time.current
+      application_params.merge(
+        place_id:      @place.id,
+        applicant_id:  current_user.id,
+        status:        -1,
+        creation_time: Time.current
+      )
     )
 
     if application.save
       @place.increment!(:number_of_applicants)
-      current_user.update(job_title: params[:job_title]) if params[:job_title].present?
-      flash[:notice] = 'The poster will evaluate your application before scheduling a visit.'
-    else
-      flash[:alert] = 'Unable to submit your application.'
-    end
 
-    redirect_to apply_path(@place)
+      flash[:notice] = "Votre candidature a été envoyée avec succès ! La personne chargée de l'annonce l'évaluera avant de programmer une visite."
+
+      redirect_to my_applications_path
+    else
+      flash[:alert] = 'Problème lors du traitement de votre candidature.'
+      redirect_to apply_path(@place)
+    end
   end
 
   def destroy
@@ -49,5 +60,27 @@ class ApplicationsController < ApplicationController
 
     application.destroy
     redirect_to my_applications_path
+  end
+
+  private
+
+  def user_params
+    params.require(:user).permit(
+      :name,
+      :email,
+      :job_title,
+      :phone_number,
+      :profile_picture
+    )
+  end
+
+  def application_params
+    params.permit(
+      :marital_status,
+      :reference_phone,
+      :desired_rental_duration,
+      :has_pets,
+      :details
+    )
   end
 end

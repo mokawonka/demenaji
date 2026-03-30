@@ -1,0 +1,133 @@
+<% content_for :title, "Candidatures pour #{@place.address}" %>
+
+<div class="container" style="max-width: 1100px; padding-top: 40px; padding-bottom: 100px;">
+
+  <div style="margin-bottom:32px;">
+    <a href="/MyPlaces" class="fs-15" style="color:#777; text-decoration:none;">
+      ← Retour à mes annonces
+    </a>
+  </div>
+
+  <h2 class="title" style="margin-bottom:8px;">Candidatures pour <%= @place.address %></h2>
+  <p class="fs-12d" style="margin-bottom:40px;">
+    <%= @applications.count %> personne(s) ont postulé
+  </p>
+
+  <% if @applications.empty? %>
+    <div style="background:white; border-radius:14px; padding:60px; text-align:center; border:1px solid #f0f0f0;">
+      <i class="fa fa-inbox" style="font-size:68px; color:#f0f0f0;"></i>
+      <h4 style="margin:24px 0 12px; color:#777;">Aucune candidature pour le moment</h4>
+    </div>
+  <% else %>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(360px, 1fr)); gap:24px;">
+
+      <% @applications.each do |app| %>
+        <div style="background:white; border-radius:14px; padding:24px; border:1px solid #f0f0f0; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+
+          <%# Applicant Header %>
+          <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px;">
+            <% if app.applicant.profile_picture.attached? %>
+              <%= image_tag app.applicant.profile_picture, 
+                    class: "applicant-profile-pic", 
+                    style: "width:64px; height:64px;" %>
+            <% else %>
+              <div style="width:64px; height:64px; border-radius:50%; background:#f0f0f0; 
+                          display:flex; align-items:center; justify-content:center;">
+                <i class="fa fa-user" style="font-size:32px; color:#ccc;"></i>
+              </div>
+            <% end %>
+
+            <div style="flex:1;">
+              <h4 style="margin:0; font-size:19px;"><%= app.applicant.name %></h4>
+              <% if app.applicant.job_title.present? %>
+                <span class="fs-12d">Profession : <%= app.applicant.job_title %></span>
+              <% end %>
+            </div>
+
+            <%# Status Badge %>
+            <% status_color = case app.status
+                when -1 then '#ff8138'
+                when 0, -2 then '#e05252'
+                when 1 then '#41a541'
+                else '#777' end %>
+
+            <span style="background:<%= status_color %>; color:white; padding:6px 16px; 
+                         border-radius:9999px; font-size:13px; font-weight:600; white-space:nowrap;">
+              <%= case app.status
+                    when -1 then 'En attente'
+                    when 0, -2 then 'Refusé'
+                    when 1 then 'Invité'
+                    else 'Inconnu' end %>
+            </span>
+          </div>
+
+          <%# Contact Information - Made very clear %>
+          <div style="background:#f8f9fa; border-radius:12px; padding:16px; margin-bottom:20px;">
+            <p class="fs-12d" style="margin-bottom:8px;">📞 Contact direct</p>
+            <strong style="font-size:16px; color:#333;">
+              <%= app.applicant.phone_number || 'Non renseigné' %>
+            </strong>
+          </div>
+
+          <%# Application Details %>
+          <div style="margin-bottom:20px;">
+            <p class="fs-12d" style="margin-bottom:10px;">Informations de la candidature</p>
+            
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; font-size:15px;">
+              <div>
+                <span class="fs-12d">Statut matrimonial</span><br>
+                <strong><%= app.marital_status || '—' %></strong>
+              </div>
+              <div>
+                <span class="fs-12d">Durée souhaitée</span><br>
+                <strong><%= app.desired_rental_duration ? "#{app.desired_rental_duration} mois" : '—' %></strong>
+              </div>
+              <div>
+                <span class="fs-12d">Téléphone de référence</span><br>
+                <strong style="color:#555;"><%= app.reference_phone || '—' %></strong>
+              </div>
+              <div>
+                <span class="fs-12d">Animaux de compagnie</span><br>
+                <strong><%= app.has_pets ? 'Oui' : 'Non' %></strong>
+              </div>
+            </div>
+          </div>
+
+          <%# Message from applicant %>
+          <% if app.details.present? %>
+            <div style="background:#f9f9f9; border-radius:10px; padding:16px; margin-bottom:24px;">
+              <span class="fs-12d">Message au propriétaire</span>
+              <p style="margin:10px 0 0; line-height:1.6; color:#333;">
+                <%= app.details %>
+              </p>
+            </div>
+          <% end %>
+
+          <%# Action Buttons %>
+          <div style="display:flex; gap:12px;">
+            <%= form_with url: "/MyPlaces/Invite/#{@place.id}/#{app.id}", method: :post, local: true do |f| %>
+              <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+              <button type="submit" class="btn btn-submit flex-grow-1">
+                Inviter pour une visite
+              </button>
+            <% end %>
+
+            <%= form_with url: "/MyPlaces/Decline/#{@place.id}/#{app.id}", method: :post, local: true do |f| %>
+              <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+              <button type="submit" 
+                      onclick="return confirm('Refuser cette candidature ? Cette action est irréversible.')"
+                      class="btn flex-grow-1"
+                      style="background:#f0f0f0; color:#e05252; border:none;">
+                Refuser
+              </button>
+            <% end %>
+          </div>
+
+        </div>
+      <% end %>
+
+    </div>
+  <% end %>
+
+</div>

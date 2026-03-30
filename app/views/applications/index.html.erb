@@ -1,50 +1,119 @@
-<h2 class="title">
-  Mes demandes
-  <%= image_tag 'img_apps.png', class: 'mt-3 mb-5 float-right' %>
-</h2>
+<% content_for :title, 'Mes demandes' %>
 
-<% if @applications.empty? %>
-  <div class="container watermark">
-    <span class="fs-20">Vous n'avez postulé pour aucune annonce pour l'instant.</span>
+<div class="container" style="max-width: 900px; padding-top: 40px; padding-bottom: 100px;">
+
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+    <h2 class="title" style="margin-bottom:0;">Mes demandes</h2>
+    <%= image_tag 'img_apps.png', class: 'mt-3 mb-5', style: 'height:68px;' %>
   </div>
+  <p class="fs-12d" style="margin-bottom:40px;">Suivez le statut de toutes vos candidatures en un coup d’œil</p>
 
-<% else %>
-  <form method="post">
-    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+  <% if @applications.empty? %>
+    <div style="background:white; border-radius:14px; padding:60px 40px; border:1px solid #f0f0f0; text-align:center;">
+      <div style="font-size:68px; margin-bottom:24px; color:#f0f0f0;">
+        <i class="fa fa-inbox"></i>
+      </div>
+      <h3 class="fs-20b" style="margin-bottom:12px; color:#777;">Aucune candidature pour l’instant</h3>
+      <p class="fs-15" style="color:#bbb; max-width:380px; margin:0 auto 32px;">
+        Vous n’avez encore postulé à aucune annonce.<br>
+        Commencez dès maintenant à explorer les logements disponibles.
+      </p>
+      <a href="/" class="btn btn-submit btn-lg" style="border-radius:12px; min-width:220px;">
+        Parcourir les annonces
+      </a>
+    </div>
+  <% else %>
 
-    <table class="table">
-      <tbody>
-        <% @applications.each do |item| %>
-          <tr class="bluerow">
-            <td class="text-center fs-18">
-              <%= (item.creation_time || item.created_at).strftime('%B %d, %Y') %>
-            </td>
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:24px;">
 
-            <td class="text-center fs-18">
-              <% if item.place %>
-                <a href="/Place/<%= item.place.id %>"><b><%= item.place.address %></b></a>
-              <% else %>
-                <i class="fs-17">Annonce supprimée</i>
-              <% end %>
-            </td>
+      <% @applications.each do |item| %>
+        <div style="background:white; border-radius:14px; padding:24px; border:1px solid #f0f0f0; box-shadow:0 2px 12px rgba(0,0,0,0.06); transition:all 0.2s;">
 
-            <td class="text-center">
-              <span class="badge badge-primary">
-                <%= case item.status
-                    when 0, -2 then 'Refusé'
-                    when 1     then 'Invité'
-                    else            'En cours'
-                    end %>
-              </span>
-            </td>
+          <%# Header: Date + Status %>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <span class="fs-12d">
+              <%= (item.creation_time || item.created_at).strftime('%d %B %Y') %>
+            </span>
 
-            <td class="text-center">
-              <button formaction="/MyApplications/Delete/<%= item.id %>"
-                      class="btn btn-sm btn-danger">Supprimer</button>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </form>
-<% end %>
+            <%# Status badge – modern colored pills %>
+            <% status_text = case item.status
+                 when 0, -2 then 'Refusé'
+                 when 1     then 'Invité'
+                 else            'En cours'
+                 end %>
+
+            <% status_color = case item.status
+                 when 0, -2 then '#e05252'
+                 when 1     then '#41a541'
+                 else            '#ff8138'
+                 end %>
+
+            <span style="background:<%= status_color %>; color:white; font-size:13px; font-weight:600; padding:4px 14px; border-radius:9999px;">
+              <%= status_text %>
+            </span>
+          </div>
+
+          <%# Place address %>
+          <div style="margin-bottom:20px;">
+            <% if item.place %>
+              <a href="/Place/<%= item.place.id %>" style="text-decoration:none; color:inherit;">
+                <h4 style="margin:0; font-size:19px; font-weight:500; line-height:1.3;">
+                  <%= item.place.address %>
+                </h4>
+              </a>
+            <% else %>
+              <h4 style="margin:0; font-size:19px; color:#aaa; font-style:italic;">Annonce supprimée</h4>
+            <% end %>
+          </div>
+
+          <%# Application details – clean two-column layout %>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; font-size:15px; color:#555;">
+            <div>
+              <span class="fs-12d">Statut matrimonial</span><br>
+              <strong><%= item.marital_status || '—' %></strong>
+            </div>
+            <div>
+              <span class="fs-12d">Durée souhaitée</span><br>
+              <strong><%= item.desired_rental_duration ? "#{item.desired_rental_duration} mois" : '—' %></strong>
+            </div>
+            <div>
+              <span class="fs-12d">Téléphone de référence</span><br>
+              <strong><%= item.reference_phone || '—' %></strong>
+            </div>
+            <div>
+              <span class="fs-12d">Animaux</span><br>
+              <strong><%= item.has_pets ? 'Oui' : 'Non' %></strong>
+            </div>
+          </div>
+
+          <%# Message / Details %>
+          <% if item.details.present? %>
+            <div style="background:#f9f9f9; border-radius:10px; padding:14px; margin-bottom:24px;">
+              <span class="fs-12d">Message au propriétaire</span>
+              <p style="margin:8px 0 0; font-size:15px; line-height:1.5; color:#444;">
+                <%= item.details %>
+              </p>
+            </div>
+          <% end %>
+
+          <%# Action buttons %>
+          <div style="display:flex; gap:12px; justify-content:flex-end;">
+            <%= form_with url: "/MyApplications/Delete/#{item.id}", method: :post, local: true do |f| %>
+              <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+              <button type="submit"
+                      onclick="return confirm('Supprimer cette candidature ? Cette action est irréversible.')"
+                      class="btn btn-sm"
+                      style="background:#f0f0f0; color:#666; border:none; border-radius:10px; padding:8px 18px; font-size:14px;">
+                <i class="fa fa-trash"></i> Supprimer
+              </button>
+            <% end %>
+          </div>
+
+        </div>
+      <% end %>
+
+    </div>
+
+  <% end %>
+
+</div>
