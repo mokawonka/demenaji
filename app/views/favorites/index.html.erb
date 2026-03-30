@@ -1,47 +1,91 @@
-<div class="fav-header">
-  <h2 class="fav-title">Favoris</h2>
-  <% unless @favorites.empty? %>
-    <span class="fav-count"><%= @favorites.count %> annonce<%= @favorites.count > 1 ? 's' : '' %></span>
-  <% end %>
-</div>
+<% content_for :title, 'Favoris' %>
 
-<% if @favorites.empty? %>
-  <div class="empty-state">
-    <div class="empty-icon"><i class="fa-regular fa-heart"></i></div>
-    <p class="empty-text">Pas de favoris pour le moment.</p>
+<div class="container" style="max-width: 1100px; padding-top: 40px; padding-bottom: 100px;">
+
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+    <h2 class="title" style="margin-bottom:0;">Favoris</h2>
+    <% unless @favorites.empty? %>
+      <span class="fav-count" style="background:#e8f7f9; color:#17a2b8; padding:6px 16px; border-radius:9999px; font-size:14px; font-weight:600;">
+        <%= @favorites.count %> annonce<%= @favorites.count > 1 ? 's' : '' %>
+      </span>
+    <% end %>
   </div>
 
-<% else %>
-  <form method="post" action="/Favorites">
-    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+  <p class="fs-12d" style="margin-bottom:40px;">Les annonces que vous avez sauvegardées</p>
 
-    <div class="fav-grid">
+  <% if @favorites.empty? %>
+    <div style="background:white; border-radius:14px; padding:80px 40px; border:1px solid #f0f0f0; text-align:center;">
+      <div style="font-size:72px; margin-bottom:24px; color:#f0f0f0;">
+        <i class="fa-regular fa-heart"></i>
+      </div>
+      <h3 class="fs-20b" style="margin-bottom:12px; color:#777;">Aucun favori pour le moment</h3>
+      <p class="fs-15" style="color:#bbb; max-width:420px; margin:0 auto 32px;">
+        Vous n’avez encore ajouté aucune annonce à vos favoris.<br>
+        Explorez les logements et cliquez sur le cœur pour les sauvegarder.
+      </p>
+      <a href="/" class="btn btn-submit btn-lg" style="border-radius:12px; min-width:220px;">
+        Parcourir les annonces
+      </a>
+    </div>
+  <% else %>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(340px, 1fr)); gap:24px;">
+
       <% @favorites.each do |fav| %>
         <% place = fav.place %>
         <% next unless place %>
 
-        <a href="/Place/<%= place.id %>" class="fav-card">
-          <div class="fav-img">
-            <% if place.place_pictures.any? %>
-              <%= image_tag place.place_pictures.first.thumbnail_url %>
+        <a href="/Place/<%= place.id %>" class="fav-card" 
+           style="text-decoration:none; color:inherit; display:block; border-radius:14px; overflow:hidden; border:1px solid #f0f0f0; background:white; box-shadow:0 2px 12px rgba(0,0,0,0.06); transition:all 0.2s;">
+
+          <%# Image %>
+          <div class="fav-img" style="height:180px; overflow:hidden;">
+            <% if place.place_pictures.any? && place.place_pictures.first.picture.attached? %>
+              <%= image_tag place.place_pictures.first.thumbnail_url, 
+                    style: "width:100%; height:100%; object-fit:cover;" %>
             <% else %>
-              <%= image_tag 'default-place.png', style: 'width:100%; height:160px; object-fit:cover;' %>
+              <%= image_tag 'default-place.png', 
+                    style: "width:100%; height:100%; object-fit:cover;" %>
             <% end %>
           </div>
-          <div class="fav-body">
-            <p class="fav-rent"><%= number_with_delimiter(place.rent) %> DA</p>
-            <p class="fav-beds"><%= place.bedroom_label.upcase %></p>
-            <p class="fav-addr"><%= place.address %></p>
-          </div>
-          <div class="fav-footer">
-            <span class="fav-date"><%= l(place.post_date, format: :long) if place.post_date %></span>
-            <button class="btn-remove" name="fav" value="<%= place.id %>" onclick="event.stopPropagation()">
-              &#x2715;
-            </button>
-          </div>
-        </a>
 
+          <%# Body %>
+          <div style="padding:16px 18px 12px;">
+            <p class="fav-rent" style="margin:0 0 4px; font-size:22px; font-weight:400; color:rgb(65, 133, 65);">
+              <%= number_with_delimiter(place.rent) %> DA
+            </p>
+            <p class="fav-beds" style="margin:0 0 8px; font-size:13px; color:#999; text-transform:uppercase; letter-spacing:0.5px;">
+              <%= place.bedroom_label %>
+            </p>
+            <p class="fav-addr" style="margin:0; font-size:14px; color:#555; line-height:1.4;">
+              <%= place.address %>
+            </p>
+          </div>
+
+          <%# Footer with remove button %>
+          <div style="border-top:1px solid #f5f5f5; padding:10px 18px; display:flex; justify-content:space-between; align-items:center; background:#fafafa;">
+            <span class="fav-date" style="font-size:12px; color:#aaa;">
+              <%= l(place.post_date, format: :long) if place.post_date %>
+            </span>
+
+            <%= form_with url: "/Favorites", method: :post, local: true do |f| %>
+              <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+              <button type="submit" 
+                      name="fav" 
+                      value="<%= place.id %>" 
+                      onclick="event.stopPropagation(); return confirm('Retirer des favoris ?');"
+                      class="btn-remove" 
+                      style="background:none; border:none; font-size:18px; color:#ccc; padding:4px 8px; border-radius:6px;">
+                ✕
+              </button>
+            <% end %>
+          </div>
+
+        </a>
       <% end %>
+
     </div>
-  </form>
-<% end %>
+
+  <% end %>
+
+</div>

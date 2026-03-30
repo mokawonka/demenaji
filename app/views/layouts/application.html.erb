@@ -24,39 +24,45 @@
   </head>
   
   <body>
-    <header>
-      <nav id="headbar" class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow navbar-light bg-light">
-        <div style="position:fixed;" class="col-7 col-sm-8 col-xl-8 pr-0">
-          <div class="row">
-            <div class="col-3 col-sm-4 col-lg-6">
-              <div class="row">
-                <div class="col-6 mt-1 pl-0 pr-0">
-                  <a class="navbar-brand d-block" href="<%= root_path %>">
-                      <%= image_tag 'pm-logo.png', height: "45", class: 'd-none d-lg-block pl-2 pt-1' %>
-                      <%= image_tag 'favicon.ico', height: "45", class: 'd-lg-none pl-2 pt-1 float-left' %>
-                  </a>
-                </div>
-                <div class="col-6 mt-1 pl-0 pr-0 d-none d-xl-flex" style="justify-content:center;">
-                  <% if signed_in? %>
-                    <a href="<%= create_place_path %>" class="btn btn-add-place"><b class="plussign">+</b> <b>Annonce</b></a>
-                  <% end %>
-                </div>
-              </div>
-            </div>
-            <div class="form-group has-search col-9 col-sm-8 col-lg-6 mt-3 pl-0 pr-0">
-              <span class="fa fa-search form-control-feedback"></span>
-              <input type="search" class="form-control ds-input" id="search-input" placeholder="Où ça ?" autocomplete="off" spellcheck="false">
-            </div>
-          </div>
-        </div>
-        <div style="position:fixed;" class="offset-7 offset-sm-8 col-5 col-sm-4 col-xl-4 pr-0 pl-0">
-          <div class="float-right navbar-collapse d-sm-inline-flex flex-sm-row-reverse">
-            <%= render 'shared/login_partial' %>
-          </div>
-        </div>
-      </nav>
-    </header>
+<header>
+  <nav id="headbar" class="navbar navbar-expand-lg navbar-light bg-white border-bottom box-shadow fixed-top">
+    <div class="container-fluid px-3 px-lg-4">
 
+      <!-- Logo -->
+      <a class="navbar-brand me-3 me-lg-4" href="<%= root_path %>" style="padding: 0;">
+        <%= image_tag 'logo.png', height: "45" %>
+      </a>
+
+      <!-- "+ Annonce" Button - Only on very large screens -->
+      <% if signed_in? %>
+        <a href="<%= create_place_path %>" 
+           class="btn btn-add-place d-none d-xl-flex align-items-center gap-2 me-4">
+          <b class="plussign">+</b> 
+          <span>Annonce</span>
+        </a>
+      <% end %>
+
+      <!-- Search Bar -->
+      <div class="flex-grow-1 mx-2 mx-lg-4" style="max-width: 560px;">
+        <div class="form-group has-search position-relative mb-0">
+          <span class="fa fa-search form-control-feedback"></span>
+          <input type="search" 
+                 class="form-control ds-input" 
+                 id="search-input" 
+                 placeholder="Où ça ?" 
+                 autocomplete="off" 
+                 spellcheck="false">
+        </div>
+      </div>
+
+      <!-- Right side: Login / User menu -->
+      <div class="ms-auto">
+        <%= render 'shared/login_partial' %>
+      </div>
+
+    </div>
+  </nav>
+</header>
     <main id="main" role="main" class="pb-5">
 
       <% if flash.any? %>

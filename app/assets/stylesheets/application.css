@@ -725,25 +725,42 @@ span {
 }
 
 .btn-add-place,
-.btn-add-place:focus
-{
-  position:absolute;
-  top: 9px;
-  border-radius: 50px!important;
-  background: #ff9b61;
+.btn-add-place:focus {
+  position: relative !important;
+  top: auto !important;
+  padding: 10px 22px;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #ff9b61, #ff7a2f);
   color: white;
+  font-weight: 500;
+  font-size: 15px;
+  border: none;
   outline: none;
-  box-shadow: none;
+  box-shadow: 0 4px 12px rgba(255, 129, 56, 0.3);
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.btn-add-place:hover
-{
-  background: #ff853e;
+.btn-add-place:hover {
+  background: linear-gradient(135deg, #ff853e, #ff6a1f);
   color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 129, 56, 0.4);
 }
 
-.plussign{
-  font-size:21px;
+.btn-add-place:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(255, 129, 56, 0.3);
+}
+
+.plussign {
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 700;
+  margin-top: -2px;
 }
 
 /*Datepickers*/
@@ -1001,68 +1018,6 @@ table tr:first-child > td {
   box-shadow: none;
 }
 
-
-/***************************** PROFILE PICTURE ********************************/
-
-.avatar-upload {
-  position: relative;
-  max-width: 205px;
-  margin: 50px auto;
-}
-.avatar-upload .avatar-edit {
-  position: absolute;
-  right: 12px;
-  z-index: 1;
-  top: 10px;
-}
-.avatar-upload .avatar-edit input {
-  display: none;
-}
-.avatar-upload .avatar-edit input + label {
-  display: inline-block;
-  width: 34px;
-  height: 34px;
-  margin-bottom: 0;
-  border-radius: 100%;
-  background: #FFFFFF;
-  border: 1px solid transparent;
-  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.12);
-  cursor: pointer;
-  font-weight: normal;
-  transition: all 0.2s ease-in-out;
-}
-.avatar-upload .avatar-edit input + label:hover {
-  background: #f1f1f1;
-  border-color: #d6d6d6;
-}
-.avatar-upload .avatar-edit input + label:after {
-  content: "\f040";
-  font-family: 'FontAwesome';
-  color: #757575;
-  position: absolute;
-  top: 5px;
-  left: 0;
-  right: 0;
-  text-align: center;
-  margin: auto;
-}
-.avatar-upload .avatar-preview {
-  width: 192px;
-  height: 192px;
-  position: relative;
-  border-radius: 100%;
-  border: 6px solid rgb(243, 242, 242);
-  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
-}
-.avatar-upload .avatar-preview > div {
-  width: 100%;
-  height: 100%;
-  border-radius: 100%;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
 .mini-profile-pic{
   border-radius: 100%;
   width: 32px;
@@ -1084,24 +1039,7 @@ table tr:first-child > td {
   object-position: center;
   box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
 }
-/*************************** END OF PROFILE PICTURE ***************************/
 
-
-.watermark
-{
-  text-align: center;
-  padding-top: 150px;
-  padding-left: 0;
-  z-index:99;
-  top:50%;
-}
-
-.application-details
-{
-  max-width:500px; 
-  margin-left: auto; 
-  margin-right: auto;
-}
 
 .text-toggle {
   position: relative;

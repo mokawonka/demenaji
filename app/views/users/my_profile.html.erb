@@ -5,9 +5,9 @@
   <h2 class="title" style="margin-bottom: 8px;">Mon profil</h2>
   <p class="fs-12d" style="margin-bottom: 40px;">Gérez vos informations personnelles</p>
 
-  <%= form_with model: @user, url: update_profile_path,  method: :patch,  multipart: true do |f| %>
+  <%= form_with model: @user, url: update_profile_path, method: :patch, multipart: true do |f| %>
 
-    <%# ── Profile picture ── %>
+    <%# ── Profile Picture ── %>
     <div style="display:flex; flex-direction:column; align-items:center; margin-bottom:40px;">
       <div style="position:relative; display:inline-block;">
 
@@ -32,30 +32,31 @@
                       box-shadow:0 2px 6px rgba(255,129,56,0.4);">
           <i class="fa fa-camera" style="font-size:13px;"></i>
         </label>
+
         <%= f.file_field :profile_picture,
               id: "profile_picture_upload",
               accept: "image/jpeg,image/png,image/webp",
               style: "display:none;" %>
       </div>
-      <p class="fs-12d" style="margin-top:10px;"><%= @user.name %></p>
+      <p class="fs-12d" style="margin-top:12px; font-size:15px;"><%= @user.name %></p>
     </div>
 
-    <%# ── All editable fields ── %>
-    <div style="background:white; border-radius:14px; padding:24px;
-                border:1px solid #f0f0f0; margin-bottom:24px;">
+    <%# ── Form Fields ── %>
+    <div style="background:white; border-radius:14px; padding:28px;
+                border:1px solid #f0f0f0; margin-bottom:32px;">
 
-      <div class="form-group">
+      <div class="form-group" style="margin-bottom:20px;">
         <label class="fs-12d" style="text-align:left; margin-bottom:6px; display:block;">
           Nom complet
         </label>
         <%= f.text_field :name,
               value: @user.name,
-              placeholder: "Votre nom",
+              placeholder: "Votre nom complet",
               class: "form-control orangeinput",
-              style: "border-radius:10px;" %>
+              style: "border-radius:10px; padding:12px 16px;" %>
       </div>
 
-      <div class="form-group">
+      <div class="form-group" style="margin-bottom:20px;">
         <label class="fs-12d" style="text-align:left; margin-bottom:6px; display:block;">
           Adresse e-mail
         </label>
@@ -63,18 +64,18 @@
               value: @user.email,
               placeholder: "votre@email.com",
               class: "form-control orangeinput",
-              style: "border-radius:10px;" %>
+              style: "border-radius:10px; padding:12px 16px;" %>
       </div>
 
-      <div class="form-group">
+      <div class="form-group" style="margin-bottom:20px;">
         <label class="fs-12d" style="text-align:left; margin-bottom:6px; display:block;">
           Profession / Activité
         </label>
         <%= f.text_field :job_title,
               value: @user.job_title,
-              placeholder: "ex: Agent immobilier, Étudiant...",
+              placeholder: "ex: Agent immobilier, Étudiant, Enseignant...",
               class: "form-control orangeinput",
-              style: "border-radius:10px;" %>
+              style: "border-radius:10px; padding:12px 16px;" %>
       </div>
 
       <div class="form-group" style="margin-bottom:0;">
@@ -85,14 +86,15 @@
               value: @user.phone_number,
               placeholder: "ex: 0555 00 00 00",
               class: "form-control orangeinput",
-              style: "border-radius:10px;" %>
+              style: "border-radius:10px; padding:12px 16px;" %>
       </div>
 
     </div>
 
     <div class="text-center">
-      <%= f.submit 'Sauvegarder', class: 'btn btn-submit btn-lg',
-            style: 'border-radius:12px; min-width:180px;' %>
+      <%= f.submit 'Sauvegarder les modifications', 
+            class: 'btn btn-submit btn-lg',
+            style: 'border-radius:12px; min-width:220px; padding:14px 32px;' %>
     </div>
 
   <% end %>
@@ -101,9 +103,11 @@
 <script>
   document.getElementById('profile_picture_upload').addEventListener('change', function() {
     if (!this.files || !this.files[0]) return;
+    
     var reader = new FileReader();
     reader.onload = function(e) {
       var preview = document.getElementById('imagePreview');
+      
       if (preview.tagName === 'IMG') {
         preview.src = e.target.result;
       } else {
