@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
   root 'places#index'
 
-  get '/register', to: 'registrations#new'
-  post '/register', to: 'registrations#create'
+  get '/register', to: 'users#new'
+  post '/register', to: 'users#create'
   get '/login', to: 'sessions#new'
   post '/login', to: 'sessions#create'
   delete '/logout', to: 'sessions#destroy'
@@ -31,4 +31,8 @@ Rails.application.routes.draw do
 
   get '/MyApplications', to: 'applications#index', as: :my_applications
   post '/MyApplications/Delete/:id', to: 'applications#destroy', as: :delete_application
+
+  get  '/my_profile',      to: 'users#my_profile',      as: 'my_profile'
+  patch '/my_profile',     to: 'users#update_profile',   as: 'update_profile'
+
 end

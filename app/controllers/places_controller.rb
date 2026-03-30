@@ -25,6 +25,7 @@ class PlacesController < ApplicationController
     end
   end
 
+
   def show
     if !signed_in? || current_user.id != @place.user_id
       @place.increment!(:visitor_count)
@@ -32,6 +33,7 @@ class PlacesController < ApplicationController
     @is_faved = signed_in? && Favorite.exists?(user_id: current_user.id, place_id: @place.id)
     @user_is_owner = signed_in? && current_user.id == @place.user_id
   end
+
 
   def post_handler
     case params[:handler]
@@ -54,6 +56,7 @@ class PlacesController < ApplicationController
     end
   end
 
+
   def new
     if params[:id].present?
       @place = Place.find_by(id: params[:id])
@@ -65,6 +68,7 @@ class PlacesController < ApplicationController
       @place = Place.new
     end
   end
+
 
   def create
     @place = current_user.places.build(place_params)
@@ -83,6 +87,7 @@ class PlacesController < ApplicationController
       render :new, status: :unprocessable_entity
     end
   end
+
 
   def update
     unless @place.user_id == current_user.id
@@ -103,6 +108,7 @@ class PlacesController < ApplicationController
     end
   end
 
+
   def destroy
     if @place.user_id == current_user.id
       @place.destroy
@@ -113,6 +119,7 @@ class PlacesController < ApplicationController
     redirect_to my_places_path
   end
 
+
   private
 
   def set_place
@@ -122,11 +129,13 @@ class PlacesController < ApplicationController
     redirect_to root_path
   end
 
+
   def place_params
     params.require(:place).permit(:address, :gps_latitude, :gps_longitude, :rent, :bedrooms, :description)
   end
 
-  # Returns an array of error strings (empty if all images were fine)
+
+
   def persist_uploaded_images(place)
     errors = []
     return errors unless params[:picture_files].present?
@@ -154,6 +163,7 @@ class PlacesController < ApplicationController
     errors
   end
 
+  
   def selected_places_from_lookup
     payload = JSON.parse(params[:lookuparea] || '{}')
     ne = payload['nebb'] || [180, 90]
@@ -192,6 +202,7 @@ class PlacesController < ApplicationController
     }
   end
 
+
   def toggle_favorite(add, raw_place_id)
     return false unless signed_in?
 
@@ -205,4 +216,5 @@ class PlacesController < ApplicationController
     end
     true
   end
+
 end

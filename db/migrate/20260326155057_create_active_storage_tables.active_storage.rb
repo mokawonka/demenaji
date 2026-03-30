@@ -1,5 +1,5 @@
 # This migration comes from active_storage (originally 20170806125915)
-class CreateActiveStorageTables < ActiveRecord::Migration[7.0]
+class CreateActiveStorageTables < ActiveRecord::Migration[8.1]
   def change
     # Use Active Record's configured type for primary and foreign keys
     primary_key_type, foreign_key_type = primary_and_foreign_key_types
@@ -24,7 +24,7 @@ class CreateActiveStorageTables < ActiveRecord::Migration[7.0]
 
     create_table :active_storage_attachments, id: primary_key_type do |t|
       t.string     :name,     null: false
-      t.references :record,   null: false, polymorphic: true, index: false, type: foreign_key_type
+      t.references :record,   null: false, polymorphic: true, index: false, type: :uuid
       t.references :blob,     null: false, type: foreign_key_type
 
       if connection.supports_datetime_with_precision?

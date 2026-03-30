@@ -18,7 +18,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_29_161510) do
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
     t.string "name", null: false
-    t.bigint "record_id", null: false
+    t.uuid "record_id", null: false
     t.string "record_type", null: false
     t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
@@ -42,12 +42,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_29_161510) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "applications", force: :cascade do |t|
-    t.bigint "applicant_id", null: false
+  create_table "applications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "applicant_id", null: false
     t.datetime "created_at", null: false
     t.datetime "creation_time", null: false
+    t.integer "desired_rental_duration"
     t.text "details"
-    t.bigint "place_id", null: false
+    t.boolean "has_pets", default: false
+    t.string "marital_status"
+    t.uuid "place_id", null: false
+    t.string "reference_phone"
     t.integer "status", default: -1, null: false
     t.datetime "updated_at", null: false
     t.index ["applicant_id"], name: "index_applications_on_applicant_id"
@@ -55,26 +59,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_29_161510) do
     t.index ["place_id"], name: "index_applications_on_place_id"
   end
 
-  create_table "favorites", force: :cascade do |t|
+  create_table "favorites", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.bigint "place_id", null: false
+    t.uuid "place_id", null: false
     t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
+    t.uuid "user_id", null: false
     t.index ["place_id"], name: "index_favorites_on_place_id"
     t.index ["user_id", "place_id"], name: "index_favorites_on_user_id_and_place_id", unique: true
     t.index ["user_id"], name: "index_favorites_on_user_id"
   end
 
-  create_table "place_pictures", force: :cascade do |t|
+  create_table "place_pictures", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "pic_order", default: 0, null: false
-    t.bigint "place_id", null: false
+    t.uuid "place_id", null: false
     t.datetime "updated_at", null: false
     t.index ["place_id", "pic_order"], name: "index_place_pictures_on_place_id_and_pic_order"
     t.index ["place_id"], name: "index_place_pictures_on_place_id"
   end
 
-  create_table "places", force: :cascade do |t|
+  create_table "places", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "address", null: false
     t.integer "bedrooms", default: 0, null: false
     t.datetime "created_at", null: false
@@ -86,20 +90,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_29_161510) do
     t.datetime "post_date", null: false
     t.integer "rent", null: false
     t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
+    t.uuid "user_id", null: false
     t.integer "visitor_count", default: 0, null: false
     t.index ["gps_longitude", "gps_latitude"], name: "index_places_on_lng_lat"
     t.index ["post_date"], name: "index_places_on_post_date_desc", order: :desc
     t.index ["user_id"], name: "index_places_on_user_id"
   end
 
-  create_table "users", force: :cascade do |t|
+  create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
     t.string "job_title"
     t.string "name", null: false
     t.string "password_digest", null: false
-    t.string "profile_picture"
+    t.string "phone_number"
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end

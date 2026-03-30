@@ -1,7 +1,7 @@
 class CreatePlaces < ActiveRecord::Migration[8.1]
   def change
-    create_table :places do |t|
-      t.references :user, null: false, foreign_key: true
+    create_table :places, id: :uuid do |t|
+      t.references :user, null: false, foreign_key: true, type: :uuid
       t.string :address, null: false
       t.float :gps_latitude, null: false
       t.float :gps_longitude, null: false

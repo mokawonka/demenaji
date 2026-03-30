@@ -30,16 +30,17 @@
 
       <div class="dropdown" id="pamdropdown">
         <button type="button" class="btn btn-link pr-0 pr-sm-3 pl-0" data-toggle="dropdown">
-            <%= image_tag current_user.profile_picture.presence || 'profile_pic_mini.png' , class: 'mini-profile-pic' %>
+            <%= image_tag current_user.profile_picture.attached? ? current_user.profile_picture : 'profile_pic_mini.png' , class: 'mini-profile-pic' %>
         </button>
         <div class="dropdown-menu dropdown-menu-right">
           <p class="fs-12d text-center text-uppercase mb-0"><%= current_user.name %></p>
           <div class="dropdown-divider"></div>
+          <a class="dropdown-item fs-15" href="<%= my_profile_path %>">Mon profil</a>
           <a class="dropdown-item fs-15" href="<%= my_places_path %>">Mes Annonces</a>
           <a class="dropdown-item fs-15" href="<%= my_applications_path %>">Mes Demandes</a>
           <a class="dropdown-item fs-15" href="<%= favorites_path %>">Mes Favoris</a>
           <div class="dropdown-divider"></div>
-          <%= button_to 'Logout', logout_path, method: :delete, class: 'btn btn-danger dropdown-item text-center' %>
+          <%= button_to 'Déconnexion', logout_path, method: :delete, class: 'dropdown-item text-center', form_class: 'p-0 m-0' %>
         </div>
       </div>
     </div>

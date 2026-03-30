@@ -37,8 +37,7 @@
           <% p.applications.each do |app| %>
             <tr>
               <td class="p-0 text-center fs-15">
-                <img class="applicant-profile-pic"
-                     src="<%= app.applicant.profile_picture.presence || asset_path('profile_pic.png') %>">
+                <%= image_tag current_user.profile_picture.attached? ? current_user.profile_picture : asset_path('profile_pic.png'), class: "applicant-profile-pic" %>
               </td>
 
               <td class="text-center fs-15">
