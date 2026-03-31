@@ -4,7 +4,11 @@ class Place < ApplicationRecord
   has_many :applications, dependent: :destroy
   has_many :favorites, dependent: :destroy
 
-  validates :address, :gps_latitude, :gps_longitude, :description, :rent, presence: true
+  validates :address, presence: true
+  validates :gps_latitude, :gps_longitude, presence: { message: "L'adresse doit exister. Veuillez sélectionner une adresse valide." }
+  validates :description, presence: true
+  validates :rent, presence: true
+
   validates :rent, numericality: { greater_than_or_equal_to: 0 }
   validates :bedrooms, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 

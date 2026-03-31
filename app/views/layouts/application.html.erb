@@ -24,45 +24,42 @@
   </head>
   
   <body>
-<header>
-  <nav id="headbar" class="navbar navbar-expand-lg navbar-light bg-white border-bottom box-shadow fixed-top">
-    <div class="container-fluid px-3 px-lg-4">
+  <header>
+    <nav id="headbar" class="navbar navbar-expand-lg navbar-light bg-white border-bottom box-shadow fixed-top">
+      <div class="container-fluid px-3 px-lg-4">
 
-      <!-- Logo -->
-      <a class="navbar-brand me-3 me-lg-4" href="<%= root_path %>" style="padding: 0;">
-        <%= image_tag 'logo.png', height: "45" %>
-      </a>
-
-      <!-- "+ Annonce" Button - Only on very large screens -->
-      <% if signed_in? %>
-        <a href="<%= create_place_path %>" 
-           class="btn btn-add-place d-none d-xl-flex align-items-center gap-2 me-4">
-          <b class="plussign">+</b> 
-          <span>Annonce</span>
+        <a class="p-0 me-3 me-lg-4" href="<%= root_path %>">
+          <%= image_tag 'logo.png', height: "45" %>
         </a>
-      <% end %>
 
-      <!-- Search Bar -->
-      <div class="flex-grow-1 mx-2 mx-lg-4" style="max-width: 560px;">
-        <div class="form-group has-search position-relative mb-0">
-          <span class="fa fa-search form-control-feedback"></span>
-          <input type="search" 
-                 class="form-control ds-input" 
-                 id="search-input" 
-                 placeholder="Où ça ?" 
-                 autocomplete="off" 
-                 spellcheck="false">
+        <% if signed_in? %>
+          <a href="<%= create_place_path %>" 
+            class="btn btn-add-place d-none d-xl-flex align-items-center gap-2 me-4">
+            <b class="plussign">+</b> 
+            <span>Annonce</span>
+          </a>
+        <% end %>
+
+        <div class="flex-grow-1 mx-2 mx-lg-4" style="max-width: 560px;">
+          <div class="form-group has-search position-relative mb-0">
+            <span class="fa fa-search form-control-feedback"></span>
+            <input type="search" 
+                  class="form-control ds-input" 
+                  id="search-input" 
+                  placeholder="Où ça ?" 
+                  autocomplete="off" 
+                  spellcheck="false">
+          </div>
         </div>
-      </div>
 
-      <!-- Right side: Login / User menu -->
-      <div class="ms-auto">
-        <%= render 'shared/login_partial' %>
-      </div>
+        <div class="ms-auto">
+          <%= render 'shared/login_partial' %>
+        </div>
 
-    </div>
-  </nav>
-</header>
+      </div>
+    </nav>
+  </header>
+
     <main id="main" role="main" class="pb-5">
 
       <% if flash.any? %>
