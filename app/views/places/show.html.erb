@@ -98,10 +98,46 @@
             data-lng="<%= place.gps_longitude %>"
             data-lat="<%= place.gps_latitude %>"></div>
 
-      <div class="container roboto" id="adinfos">
+      <div class="container pt-3">
         <p class="fs-15">Adresse: <%= place.address %></p>
         <p class="fs-15"><%= place.number_of_applicants %> postulant(s)</p>
         <span class="fs-15">Posté le <%= l(place.post_date, format: :long) %></span>
+
+        <div class="mt-3 d-flex align-items-center gap-3">
+          <span class=pr-2>
+            <% if @posterPicture&.attached? %>
+              <%= image_tag @posterPicture, class: "mini-profile-pic" %>
+            <% else %>
+              <%= image_tag 'profile_pic_mini.png', class: "mini-profile-pic" %>
+            <% end %>
+          </span>
+            <span class="fs-15">
+              <strong><%= @posterName || "Utilisateur inconnu" %></strong>
+            </span>
+        </div>
+
+        <% if flash[:message_sent] %>
+          <div class="container text-center border border-light p-1 mt-3">
+            <p class="fs-17 text-success fw-bold"><%= flash[:message_sent] %></p>
+          </div>
+        <% else %>
+          <%= form_with url: messages_path, method: :post, class: "text-center border border-light p-1", data: { turbo: false } do |f| %>
+            <%= f.hidden_field :recipient_id, value: @place.user_id %>
+
+            <div class="form-group">
+              <%= f.text_area :body,
+                              spellcheck: true,
+                              maxlength: 700,
+                              class: "form-control rounded-3",
+                              id: "messagearea",
+                              rows: 3,
+                              placeholder: "Message au propriétaire de l'annonce" %>
+            </div>
+
+            <%= f.submit "Envoyer", class: "btn btn-info btn-block" %>
+          <% end %>
+        <% end %>
+
       </div>
     </div>
 

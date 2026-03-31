@@ -36,4 +36,9 @@ Rails.application.routes.draw do
   get  '/my_profile',      to: 'users#my_profile',      as: 'my_profile'
   patch '/my_profile',     to: 'users#update_profile',   as: 'update_profile'
 
+  resources :conversations, only: [:index, :show]
+
+  post "messages", to: "messages#create", as: :create_message
+  get "messages", to: "conversations#index", as: :messages
+
 end

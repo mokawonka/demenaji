@@ -1,0 +1,49 @@
+<div class="container-main-page">
+  <div class="favorites" style="padding-top: 80px;">
+    <div class="fav-header">
+      <h2 class="fav-title">Messages</h2>
+      <span class="fav-count"><%= current_user.conversations.count %> conversation(s)</span>
+    </div>
+
+    <div class="fav-grid">
+      <% if @conversations.empty? %>
+        <div class="empty-state">
+          <i class="fa-regular fa-comment empty-icon"></i>
+          <p class="empty-text">Aucune conversation pour le moment.<br>Envoyez un message depuis une annonce !</p>
+        </div>
+      <% else %>
+        <% @conversations.each do |conv| %>
+          <% other = conv.user1_id == current_user.id ? conv.user2 : conv.user1 %>
+          <% last_msg = conv.messages.order(created_at: :desc).first %>
+          <% unread_in_this_conv = conv.messages.unread.where.not(sender_id: current_user.id).count %>
+
+          <%= link_to conversation_path(conv), class: "fav-card text-decoration-none" do %>
+            <div class="fav-body d-flex align-items-center gap-3">
+              <% if other.profile_picture.attached? %>
+                <%= image_tag other.profile_picture, class: "mini-profile-pic" %>
+              <% else %>
+                <%= image_tag "profile_pic_mini.png", class: "mini-profile-pic" %>
+              <% end %>
+
+              <div class="flex-grow-1">
+                <div class="d-flex justify-content-between">
+                  <strong class="fs-15"><%= other.name %></strong>
+                  <% if last_msg %>
+                    <small class="fs-12d"><%= l(last_msg.created_at, format: :short) %></small>
+                  <% end %>
+                </div>
+                <p class="fs-15 text-truncate mb-0" style="max-width: 220px;">
+                  <%= last_msg&.body || "Conversation vide" %>
+                </p>
+              </div>
+
+              <% if unread_in_this_conv.positive? %>
+                <span class="badge bg-danger rounded-pill"><%= unread_in_this_conv %></span>
+              <% end %>
+            </div>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -60,6 +60,9 @@ h3{
   color: #777777;
 }
 
+body {
+  padding-top: 57px !important;
+}
 
 #headbar{
   height:57px;
@@ -337,10 +340,6 @@ label{
 }
 
 /*Filter section*/
-
-.roboto {
-  font-family: "Roboto";
-}
 
 span {
   display: block;
@@ -752,10 +751,6 @@ span {
   color:rgb(34, 130, 255);
 }
 
-#adinfos{
-  padding:15px;
-}
-
 .btn-submit,
 .btn-submit:focus
 {
@@ -1138,4 +1133,8 @@ table tr:first-child > td {
   font-size: 17px;
   font-weight: 100;
   color: #aaa;
+}
+
+#chat-window .bg-info {
+  background-color: #5AB8F8 !important;
 }

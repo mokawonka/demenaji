@@ -14,7 +14,7 @@ class ApplicationsController < ApplicationController
   def create
     @place = Place.find(params[:place_id])
 
-    # ── Security checks ──
+    # ── Security checks ── (votre code existant)
     if @place.user_id == current_user.id
       flash[:alert] = 'Vous ne pouvez pas postuler à votre propre annonce.'
       redirect_to place_path(@place)
@@ -27,7 +27,7 @@ class ApplicationsController < ApplicationController
       return
     end
 
-    # ── Update user profile (name, email, job, phone, picture) ──
+    # ── Update user profile ──
     if params[:user].present?
       current_user.update(user_params)
     end
@@ -45,6 +45,20 @@ class ApplicationsController < ApplicationController
     if application.save
       @place.increment!(:number_of_applicants)
 
+      # === Message automatique au propriétaire ===
+      poster = @place.user
+      if poster != current_user
+        conversation = Conversation.find_or_create_between(current_user, poster)
+        auto_body = "Nouvelle candidature reçue pour votre annonce \"#{@place.composed_title}\". " \
+                    "Vous pouvez la consulter dans vos candidatures."
+        Message.create!(
+          conversation: conversation,
+          sender: current_user,
+          body: auto_body
+        )
+      end
+      # ===========================================
+
       flash[:notice] = "Votre candidature a été envoyée avec succès ! La personne chargée de l'annonce l'évaluera avant de programmer une visite."
 
       redirect_to my_applications_path
@@ -54,6 +68,7 @@ class ApplicationsController < ApplicationController
     end
   end
 
+
   def destroy
     application = Application.find(params[:id])
     return head :forbidden unless application.applicant_id == current_user.id
@@ -61,6 +76,7 @@ class ApplicationsController < ApplicationController
     application.destroy
     redirect_to my_applications_path
   end
+
 
   private
 

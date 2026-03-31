@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_29_161510) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_31_143535) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -59,6 +59,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_29_161510) do
     t.index ["place_id"], name: "index_applications_on_place_id"
   end
 
+  create_table "conversations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user1_id", null: false
+    t.uuid "user2_id", null: false
+    t.index ["user1_id", "user2_id"], name: "index_conversations_on_user1_id_and_user2_id", unique: true
+    t.index ["user2_id", "user1_id"], name: "index_conversations_on_user2_id_and_user1_id"
+  end
+
   create_table "favorites", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.uuid "place_id", null: false
@@ -67,6 +76,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_29_161510) do
     t.index ["place_id"], name: "index_favorites_on_place_id"
     t.index ["user_id", "place_id"], name: "index_favorites_on_user_id_and_place_id", unique: true
     t.index ["user_id"], name: "index_favorites_on_user_id"
+  end
+
+  create_table "messages", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "body", null: false
+    t.uuid "conversation_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "read_at"
+    t.uuid "sender_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["conversation_id"], name: "index_messages_on_conversation_id"
+    t.index ["read_at"], name: "index_messages_on_read_at"
+    t.index ["sender_id"], name: "index_messages_on_sender_id"
   end
 
   create_table "place_pictures", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -112,8 +133,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_29_161510) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "applications", "places"
   add_foreign_key "applications", "users", column: "applicant_id"
+  add_foreign_key "conversations", "users", column: "user1_id"
+  add_foreign_key "conversations", "users", column: "user2_id"
   add_foreign_key "favorites", "places"
   add_foreign_key "favorites", "users"
+  add_foreign_key "messages", "conversations"
+  add_foreign_key "messages", "users", column: "sender_id"
   add_foreign_key "place_pictures", "places"
   add_foreign_key "places", "users"
 end

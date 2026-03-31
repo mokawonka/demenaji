@@ -1,0 +1,36 @@
+<div class="container pt-3" style="max-width: 960px; margin: 0 auto;">
+  <div class="d-flex align-items-center gap-3 mb-4 border-bottom pb-3">
+    <%= link_to conversations_path, class: "btn btn-sm btn-outline-secondary" do %>
+      ← Retour
+    <% end %>
+
+    <% if @other_user.profile_picture.attached? %>
+      <%= image_tag @other_user.profile_picture, class: "mini-profile-pic" %>
+    <% else %>
+      <%= image_tag "profile_pic_mini.png", class: "mini-profile-pic" %>
+    <% end %>
+    <h3 class="mb-0 fs-17b"><%= @other_user.name %></h3>
+  </div>
+
+  <!-- Zone des messages -->
+  <div id="chat-window" class="bg-white border rounded-3 p-3 mb-3" style="height: 60vh; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;">
+    <% @messages.each do |msg| %>
+      <div class="<%= msg.sender_id == current_user.id ? 'text-end' : 'text-start' %>">
+        <div class="<%= msg.sender_id == current_user.id ? 'bg-info text-white' : 'bg-light' %> 
+                     d-inline-block px-4 py-2 rounded-3 shadow-sm"
+             style="max-width: 70%; border-bottom-right-radius: <%= msg.sender_id == current_user.id ? '4px' : '20px' %>;
+                    border-bottom-left-radius: <%= msg.sender_id == current_user.id ? '20px' : '4px' %>;">
+          <p class="mb-1 fs-15"><%= msg.body %></p>
+          <small class="opacity-75"><%= l(msg.created_at, format: :short) %></small>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Formulaire d'envoi (Turbo-ready) -->
+  <%= form_with url: messages_path, method: :post, class: "d-flex gap-2", data: { turbo: true, turbo_frame: "chat-window" } do |f| %>
+    <%= f.hidden_field :recipient_id, value: @other_user.id %>
+    <%= f.text_area :body, class: "form-control rounded-3", rows: 2, placeholder: "Écrivez votre message...", style: "resize: none;" %>
+    <%= f.submit "Envoyer", class: "btn btn-info align-self-end" %>
+  <% end %>
+</div>

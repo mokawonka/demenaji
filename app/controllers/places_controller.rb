@@ -32,6 +32,10 @@ class PlacesController < ApplicationController
     end
     @is_faved = signed_in? && Favorite.exists?(user_id: current_user.id, place_id: @place.id)
     @user_is_owner = signed_in? && current_user.id == @place.user_id
+
+    poster = User.find_by(id: @place.user_id)
+    @posterName = poster&.name || "Utilisateur inconnu"
+    @posterPicture = poster&.profile_picture
   end
 
 
