@@ -33,7 +33,7 @@
     <% grouped = messages.group_by { |m| m.created_at.to_date } %>
     <% grouped.each do |date, msgs| %>
       <div class="msg-date-sep">
-        <%= date == Date.today ? "Aujourd'hui" :  date.strftime("%-d %B %Y") %>
+        <%= date == Date.today ? "Aujourd'hui" : I18n.l(date, format: :long) %>
       </div>
       <% msgs.each do |msg| %>
         <div class="msg-row <%= msg.sender_id == current_user.id ? 'sent' : 'recv' %>"
@@ -45,7 +45,7 @@
           <% end %>
           <div class="bubble">
             <%= simple_format msg.body, {}, wrapper_tag: :span %>
-            <span class="bubble-time"><%= msg.created_at.strftime("%H:%M") %></span>
+            <span class="bubble-time"><%= msg.created_at.in_time_zone.strftime("%H:%M") %></span>
           </div>
         </div>
       <% end %>

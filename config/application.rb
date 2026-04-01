@@ -25,5 +25,7 @@ module Demenaji
     # config.eager_load_paths << Rails.root.join("extras")
 
     config.i18n.default_locale = :fr
+    config.time_zone = "Africa/Algiers"
+
   end
 end
