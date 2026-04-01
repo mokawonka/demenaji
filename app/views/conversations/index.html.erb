@@ -1,49 +1,107 @@
-<div class="container-main-page">
-  <div class="favorites" style="padding-top: 80px;">
-    <div class="fav-header">
-      <h2 class="fav-title">Messages</h2>
-      <span class="fav-count"><%= current_user.conversations.count %> conversation(s)</span>
-    </div>
+<%# app/views/conversations/index.html.erb
+    Single unified view — left panel = conversation list, right panel = chat.
+    Works with Turbo.session.drive = false (no Turbo Drive needed).
+%>
 
-    <div class="fav-grid">
-      <% if @conversations.empty? %>
-        <div class="empty-state">
-          <i class="fa-regular fa-comment empty-icon"></i>
-          <p class="empty-text">Aucune conversation pour le moment.<br>Envoyez un message depuis une annonce !</p>
+<div class="messaging-page"
+     data-controller="messaging">
+
+  <div class="msg-shell">
+
+    <%# ── LEFT PANEL ── %>
+    <div class="conv-panel">
+      <div class="conv-header">
+        <h2 class="conv-title">Messages</h2>
+        <div class="conv-search">
+          <span class="conv-search-icon">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </span>
+          <input
+            type="text"
+            class="conv-search-input"
+            placeholder="Rechercher…"
+            data-action="input->messaging#filterConversations"
+          />
         </div>
-      <% else %>
-        <% @conversations.each do |conv| %>
-          <% other = conv.user1_id == current_user.id ? conv.user2 : conv.user1 %>
-          <% last_msg = conv.messages.order(created_at: :desc).first %>
-          <% unread_in_this_conv = conv.messages.unread.where.not(sender_id: current_user.id).count %>
+      </div>
 
-          <%= link_to conversation_path(conv), class: "fav-card text-decoration-none" do %>
-            <div class="fav-body d-flex align-items-center gap-3">
-              <% if other.profile_picture.attached? %>
-                <%= image_tag other.profile_picture, class: "mini-profile-pic" %>
-              <% else %>
-                <%= image_tag "profile_pic_mini.png", class: "mini-profile-pic" %>
-              <% end %>
+      <div class="conv-list">
+        <% if @conversations.empty? %>
+          <div class="conv-empty">
+            <i class="fa-regular fa-comment" style="font-size:28px; color:#ddd; margin-bottom:8px;"></i>
+            <p>Aucune conversation</p>
+          </div>
+        <% else %>
+          <% @conversations.each do |conv| %>
+            <% other    = conv.user1_id == current_user.id ? conv.user2 : conv.user1 %>
+            <% last_msg = conv.messages.order(created_at: :desc).first %>
+            <% unread   = conv.messages.unread.where.not(sender_id: current_user.id).count %>
 
-              <div class="flex-grow-1">
-                <div class="d-flex justify-content-between">
-                  <strong class="fs-15"><%= other.name %></strong>
-                  <% if last_msg %>
-                    <small class="fs-12d"><%= l(last_msg.created_at, format: :short) %></small>
-                  <% end %>
-                </div>
-                <p class="fs-15 text-truncate mb-0" style="max-width: 220px;">
-                  <%= last_msg&.body || "Conversation vide" %>
-                </p>
+            <div class="conv-item <%= @conversation&.id == conv.id ? 'active' : '' %>"
+                 data-conversation-id="<%= conv.id %>"
+                 data-action="click->messaging#loadConversation"
+                 data-messaging-target="convItem">
+
+              <div class="conv-avatar-wrap">
+                <% if other.profile_picture.attached? %>
+                  <%= image_tag other.profile_picture, class: "conv-avatar-img" %>
+                <% else %>
+                  <div class="conv-avatar-initials">
+                    <%= other.name.split.map(&:first).first(2).join.upcase %>
+                  </div>
+                <% end %>
               </div>
 
-              <% if unread_in_this_conv.positive? %>
-                <span class="badge bg-danger rounded-pill"><%= unread_in_this_conv %></span>
+              <div class="conv-info">
+                <div class="conv-name-row">
+                  <span class="conv-name"><%= other.name %></span>
+                  <% if last_msg %>
+                    <span class="conv-time"><%= l(last_msg.created_at, format: :short) %></span>
+                  <% end %>
+                </div>
+                <div class="conv-preview <%= 'unread' if unread.positive? %>">
+                  <% if last_msg %>
+                    <%= last_msg.sender_id == current_user.id ? 'Vous : ' : '' %><%= truncate(last_msg.body, length: 42) %>
+                  <% else %>
+                    Conversation vide
+                  <% end %>
+                </div>
+              </div>
+
+              <% if unread.positive? %>
+                <span class="unread-badge"><%= unread %></span>
               <% end %>
             </div>
           <% end %>
         <% end %>
-      <% end %>
+      </div>
+    </div>
+
+    <%# ── RIGHT PANEL ── %>
+    <div class="chat-panel">
+
+      <%# Empty state %>
+      <div class="chat-empty" id="chat-empty-state"
+           style="<%= @conversation ? 'display:none;' : '' %>">
+        <div style="width:52px;height:52px;border-radius:50%;background:#f5f5f5;border:0.5px solid #e5e5e5;display:flex;align-items:center;justify-content:center;">
+          <i class="fa-regular fa-comment" style="font-size:22px;color:#ccc;"></i>
+        </div>
+        <p style="font-size:14px;color:#bbb;margin-top:10px;">Sélectionnez une conversation</p>
+      </div>
+
+      <%# Chat content — swapped by fetch() in messaging_controller.js %>
+      <div id="chat-frame"
+           style="<%= @conversation ? 'display:flex; flex:1; flex-direction:column; min-height:0;' : 'display:none;' %>">
+
+        <% if @conversation %>
+          <%= render "chat_inner", conversation: @conversation,
+                                   other_user: @other_user,
+                                   messages: @messages,
+                                   current_user: current_user %>
+        <% end %>
+
+      </div>
+
     </div>
   </div>
 </div>

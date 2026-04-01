@@ -19,7 +19,7 @@
         </a>
       </li>
 
-      <li class="nav-item position-relative">
+      <li class="nav-item" style="position: relative; display: inline-flex;">
         <%= link_to conversations_path, class: "btn btn-sm button-navbar mr-1 mr-sm-3" do %>
           <span class="nav-txt">
             <i class="fa-regular fa-comment d-inline-block"></i>
@@ -28,8 +28,7 @@
         <% end %>
 
         <% if current_user&.unread_messages_count&.positive? %>
-          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fs-12"
-                style="font-size: 0.65rem; padding: 2px 6px; min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;">
+          <span class="red_counter">
             <%= current_user.unread_messages_count %>
           </span>
         <% end %>

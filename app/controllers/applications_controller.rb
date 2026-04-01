@@ -50,7 +50,7 @@ class ApplicationsController < ApplicationController
       if poster != current_user
         conversation = Conversation.find_or_create_between(current_user, poster)
         auto_body = "Nouvelle candidature reçue pour votre annonce \"#{@place.composed_title}\". " \
-                    "Vous pouvez la consulter dans vos candidatures."
+                    "Vous pouvez la consulter dans Mes annonces rubrique Voir les candidatures."
         Message.create!(
           conversation: conversation,
           sender: current_user,
@@ -59,7 +59,7 @@ class ApplicationsController < ApplicationController
       end
       # ===========================================
 
-      flash[:notice] = "Votre candidature a été envoyée avec succès ! La personne chargée de l'annonce l'évaluera avant de programmer une visite."
+      flash[:notice] = "Votre candidature a été envoyée avec succès."
 
       redirect_to my_applications_path
     else

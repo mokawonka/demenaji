@@ -1,25 +1,51 @@
 class ConversationsController < ApplicationController
   before_action :require_login
+  before_action :set_conversation, only: [:show]
 
   def index
-    # La bulle rouge disparaît immédiatement
-    current_user.mark_all_messages_as_read!
+    @conversations = current_user
+      .conversations
+      .includes(:user1, :user2, :messages)
+      .order("messages.created_at DESC")
 
-    @conversations = current_user.conversations
-                                 .includes(:user1, :user2, messages: :sender)
-                                 .order(updated_at: :desc)
+    # If a conversation_id param is given (or Turbo frame request),
+    # pre-load that conversation too
+    if params[:conversation_id].present?
+      @conversation = @conversations.find_by(id: params[:conversation_id])
+      load_messages if @conversation
+    end
   end
 
   def show
-    @conversation = Conversation.find(params[:id])
-    # Sécurité : l'utilisateur doit faire partie de la conversation
-    unless [@conversation.user1_id, @conversation.user2_id].include?(current_user.id)
-      redirect_to conversations_path, alert: "Accès refusé."
-      return
-    end
+    @conversations = current_user
+      .conversations
+      .includes(:user1, :user2, :messages)
+      .order("messages.created_at DESC")
 
-    @other_user = @conversation.user1_id == current_user.id ? @conversation.user2 : @conversation.user1
-    @messages = @conversation.messages.order(created_at: :asc)
+    load_messages
+
+    # Mark messages as read
+    @conversation.messages
+      .unread
+      .where.not(sender_id: current_user.id)
+      .update_all(read_at: Time.current)
+
+    respond_to do |format|
+      format.html { render :index }          # full page (direct URL visit)
+      format.turbo_stream                     # Turbo frame swap (AJAX click)
+    end
   end
-  
+
+  private
+
+  def set_conversation
+    @conversation = current_user.conversations.find(params[:id])
+  end
+
+  def load_messages
+    @messages     = @conversation.messages.order(:created_at)
+    @other_user   = @conversation.user1_id == current_user.id \
+                    ? @conversation.user2 \
+                    : @conversation.user1
+  end
 end

@@ -32,7 +32,7 @@
           <%# Header: Date + Status %>
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
             <span class="fs-12d">
-              <%= (item.creation_time || item.created_at).strftime('%d %B %Y') %>
+              <%= I18n.l((item.creation_time || item.created_at).to_date, format: :long) %>
             </span>
 
             <%# Status badge – modern colored pills %>

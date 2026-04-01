@@ -8,3 +8,6 @@ import "pictures"
 Turbo.session.drive = false
 
 
+
+import "trix"
+import "@rails/actiontext"
