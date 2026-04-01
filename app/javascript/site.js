@@ -358,46 +358,56 @@ function inbounds(loc, ne, sw){
 //////////////////////////
 // LoadPlacesFromServer //
 ////////////////////////// 
-function LoadPlacesFromServer(polygon)
-{
-    if (isLoadingPlaces) return;
-    isLoadingPlaces = true;
+function showLoading() {
+  document.getElementById("list-overlay").classList.add("active")
+  document.getElementById("map-overlay").classList.add("active")
+  $("#ulist").css({ "opacity": "0.4", "transition": "opacity 0.2s" })
+}
 
-    $("#ulist").css("opacity", "0.6");   // visual feedback
+function hideLoading() {
+  document.getElementById("list-overlay").classList.remove("active")
+  document.getElementById("map-overlay").classList.remove("active")
+  $("#ulist").css({ "opacity": "1", "transition": "opacity 0.3s" })
+}
 
-    var zoom = map.getZoom();
+function LoadPlacesFromServer(polygon) {
+  if (isLoadingPlaces) return;
+  isLoadingPlaces = true;
 
-    var turfBB = turf.polygon([polygon]);
-    var largerTurfBB = turf.transformScale(turfBB, lookupAreaSize);
-    lookupArea = largerTurfBB.geometry.coordinates[0];
+  showLoading()
 
-    $.ajax({
-        type: 'POST',
-        url: '/Map?handler=Area',
-        data: {
-            lookuparea: JSON.stringify({
-                "nebb": lookupArea[1],
-                "swbb": lookupArea[3]
-            }),
-            zoom: zoom,
-            page: 1
-        },
-        dataType: "json",
-        headers: {
-            'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function(response) {
-            $("#ulist").html(response.html);
-            $('[data-toggle="tooltip"]').tooltip();
-            update();
-            lastLoadedZoom = zoom;
-        },
-        error: function() { console.log("Load failed"); },
-        complete: function() {
-            isLoadingPlaces = false;
-            $("#ulist").css("opacity", "1");
-        }
-    });
+  var zoom = map.getZoom();
+  var turfBB = turf.polygon([polygon]);
+  var largerTurfBB = turf.transformScale(turfBB, lookupAreaSize);
+  lookupArea = largerTurfBB.geometry.coordinates[0];
+
+  $.ajax({
+    type: 'POST',
+    url: '/Map?handler=Area',
+    data: {
+      lookuparea: JSON.stringify({
+        "nebb": lookupArea[1],
+        "swbb": lookupArea[3]
+      }),
+      zoom: zoom,
+      page: 1
+    },
+    dataType: "json",
+    headers: {
+      'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+    },
+    success: function(response) {
+      $("#ulist").html(response.html);
+      $('[data-toggle="tooltip"]').tooltip();
+      update();
+      lastLoadedZoom = zoom;
+    },
+    error: function() { console.log("Load failed"); },
+    complete: function() {
+      isLoadingPlaces = false;
+      hideLoading()
+    }
+  });
 }
 
 
