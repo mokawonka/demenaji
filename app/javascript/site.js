@@ -220,6 +220,28 @@ function updatePreview()
     }
 }
 
+function jitterDuplicates(features) {
+  const seen = {}
+  return features.map(f => {
+    const key = f.geometry.coordinates.join(",")
+    if (!seen[key]) {
+      seen[key] = 0
+    }
+    seen[key]++
+    if (seen[key] > 1) {
+      // offset by ~10 meters per duplicate
+      const angle = (seen[key] - 1) * (2 * Math.PI / 8)
+      const offset = 0.0001
+      f = JSON.parse(JSON.stringify(f)) // clone to avoid mutating original
+      f.geometry.coordinates = [
+        f.geometry.coordinates[0] + offset * Math.cos(angle),
+        f.geometry.coordinates[1] + offset * Math.sin(angle)
+      ]
+    }
+    return f
+  })
+}
+
 ///////////////
 // updateMap //
 ///////////////
@@ -250,6 +272,8 @@ function updateMap()
                 showedFeatures.push(feature);
             }
         }
+
+        showedFeatures = jitterDuplicates(showedFeatures);
 
         var mapdata = { "type": "FeatureCollection", "features": showedFeatures };
 
