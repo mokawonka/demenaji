@@ -66,7 +66,7 @@
       <% if flash.any? %>
         <div id="flash-container" class="position-fixed top-0 start-50 translate-middle-x w-100" style="z-index: 1050; pointer-events: none;">
           <div class="d-flex flex-column align-items-center mt-3">
-            <% flash.to_h.except(:message_sent, "message_sent").each do |type, message| %>
+            <% flash.each do |type, message| %>
               <% color = case type
                 when 'notice'  then 'success'
                 when 'alert'   then 'danger'

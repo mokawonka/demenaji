@@ -360,13 +360,11 @@ function inbounds(loc, ne, sw){
 ////////////////////////// 
 function showLoading() {
   document.getElementById("list-overlay").classList.add("active")
-  document.getElementById("map-overlay").classList.add("active")
   $("#ulist").css({ "opacity": "0.4", "transition": "opacity 0.2s" })
 }
 
 function hideLoading() {
   document.getElementById("list-overlay").classList.remove("active")
-  document.getElementById("map-overlay").classList.remove("active")
   $("#ulist").css({ "opacity": "1", "transition": "opacity 0.3s" })
 }
 

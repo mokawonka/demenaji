@@ -1169,14 +1169,3 @@ table tr:first-child > td {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
-
-.map-loading-wrap {
-  position: absolute;
-  inset: 0;
-  z-index: 10;
-  pointer-events: none;
-}
-
-.map-loading-wrap .loading-overlay {
-  border-radius: 0;
-}
