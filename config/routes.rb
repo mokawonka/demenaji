@@ -47,4 +47,11 @@ Rails.application.routes.draw do
   get  "reset_password/:token", to: "password_resets#edit",  as: "reset_password"
   patch "reset_password/:token", to: "password_resets#update"
 
+
+  get    '/settings',          to: 'users#settings',         as: :settings
+  patch  '/settings/password', to: 'users#update_password',  as: :update_password
+  patch '/settings/notifications', to: 'users#update_notifications', as: :update_notifications
+  delete '/settings/account',  to: 'users#delete_account',   as: :delete_account
+
+
 end

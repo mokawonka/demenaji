@@ -39,13 +39,19 @@ class ConversationsController < ApplicationController
   private
 
   def set_conversation
-    @conversation = current_user.conversations.find(params[:id])
+    @conversation = current_user.conversations.find_by(id: params[:id])
+    if @conversation.nil?
+      redirect_to conversations_path, alert: "Cette conversation n'existe plus."
+    end
   end
 
   def load_messages
-    @messages     = @conversation.messages.order(:created_at)
-    @other_user   = @conversation.user1_id == current_user.id \
-                    ? @conversation.user2 \
-                    : @conversation.user1
+    @messages   = @conversation.messages.order(:created_at)
+    @other_user = @conversation.user1_id == current_user.id \
+                  ? @conversation.user2 \
+                  : @conversation.user1
+  rescue ActiveRecord::RecordNotFound
+    redirect_to conversations_path, alert: "Cette conversation n'existe plus."
   end
+  
 end

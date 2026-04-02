@@ -1,0 +1,107 @@
+<% content_for :title, 'Paramètres' %>
+
+<div class="container" style="max-width: 600px; padding-top: 40px; padding-bottom: 100px;">
+
+  <h2 class="title" style="margin-bottom: 8px;">Paramètres</h2>
+  <p class="fs-12d" style="margin-bottom: 40px;">Sécurité et gestion de votre compte</p>
+
+  <%# ── Change Password ── %>
+  <div style="background:white; border-radius:14px; padding:28px; border:1px solid #f0f0f0; margin-bottom:24px;">
+    <h4 class="fs-17" style="margin-bottom:4px; font-weight:500;">Mot de passe</h4>
+    <p class="fs-12d" style="margin-bottom:24px; color:#aaa;">Choisissez un mot de passe fort.</p>
+
+    <%= form_with url: update_password_path, method: :patch, local: true do |f| %>
+      <div class="form-group" style="margin-bottom:16px;">
+        <label class="fs-12d" style="display:block; margin-bottom:6px;">Mot de passe actuel</label>
+        <%= f.password_field :current_password,
+              placeholder: "••••••••",
+              class: "form-control orangeinput",
+              style: "border-radius:10px; padding:12px 16px;" %>
+      </div>
+      <div class="form-group" style="margin-bottom:16px;">
+        <label class="fs-12d" style="display:block; margin-bottom:6px;">Nouveau mot de passe</label>
+        <%= f.password_field :password,
+              placeholder: "••••••••",
+              class: "form-control orangeinput",
+              style: "border-radius:10px; padding:12px 16px;" %>
+      </div>
+      <div class="form-group" style="margin-bottom:24px;">
+        <label class="fs-12d" style="display:block; margin-bottom:6px;">Confirmer le nouveau mot de passe</label>
+        <%= f.password_field :password_confirmation,
+              placeholder: "••••••••",
+              class: "form-control orangeinput",
+              style: "border-radius:10px; padding:12px 16px;" %>
+      </div>
+      <%= f.submit 'Mettre à jour le mot de passe',
+            class: 'btn btn-submit',
+            style: 'border-radius:10px; padding:12px 28px;' %>
+    <% end %>
+  </div>
+
+  <%# ── Notifications ── %>
+  <div style="background:white; border-radius:14px; padding:28px; border:1px solid #f0f0f0; margin-bottom:24px;">
+    <h4 class="fs-17" style="margin-bottom:4px; font-weight:500;">Notifications</h4>
+    <p class="fs-12d" style="margin-bottom:24px; color:#aaa;">Choisissez les emails que vous souhaitez recevoir.</p>
+
+    <%= form_with url: update_notifications_path, method: :patch, local: true do |f| %>
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid #f5f5f5;">
+        <div>
+        <p style="margin:0; font-size:15px; color:#444;">Notifications par email</p>
+        <p class="fs-12d" style="margin:2px 0 0; color:#bbb;">Candidatures, messages et mises à jour de votre compte.</p>
+        </div>
+        <span   id="toggle-track"
+                onclick="toggleSwitch(this)"
+                style="position:relative; display:inline-block; width:44px; height:24px; border-radius:24px; cursor:pointer;
+                    background:<%= @user.email_notifications ? '#e87722' : '#ddd' %>;
+                    transition:background 0.2s; flex-shrink:0;">
+        <span style="position:absolute; top:3px; width:18px; height:18px; border-radius:50%; background:white;
+                    left:<%= @user.email_notifications ? '23px' : '3px' %>;">
+        </span>
+        </span>
+    </div>
+    <div style="margin-top:20px;">
+        <%= f.submit 'Sauvegarder', class: 'btn btn-submit', style: 'border-radius:10px; padding:12px 28px;' %>
+    </div>
+    <% end %>
+  </div>
+
+  <%# ── Danger Zone ── %>
+  <div style="background:white; border-radius:14px; padding:28px; border:1px solid #fde8e8;">
+    <h4 class="fs-17" style="margin-bottom:4px; font-weight:500; color:#e05252;">Zone de danger</h4>
+    <p class="fs-12d" style="margin-bottom:20px; color:#aaa;">
+      La suppression de votre compte est irréversible. Toutes vos annonces,
+      candidatures et favoris seront définitivement supprimés.
+    </p>
+    <button type="button"
+            class="btn"
+            style="border-radius:10px; padding:12px 28px; background:#fff0f0; color:#e05252; border:1px solid #fde8e8;"
+            onclick="document.getElementById('delete-account-form').style.display='block'; this.style.display='none';">
+    Supprimer mon compte
+    </button>
+
+    <div id="delete-account-form" style="display:none; margin-top:16px; background:#fff5f5; border-radius:10px; padding:20px; border:1px solid #fde8e8;">
+        <p style="margin:0 0 6px; font-size:15px; font-weight:500; color:#e05252;">Êtes-vous sûr ?</p>
+        <p class="fs-12d" style="margin:0 0 16px; color:#aaa;">Cette action est irréversible. Tapez <strong>SUPPRIMER</strong> pour confirmer.</p>
+        <input type="text" id="delete-confirm-input"
+                placeholder="SUPPRIMER"
+                class="form-control orangeinput"
+                style="border-radius:10px; padding:12px 16px; margin-bottom:16px;">
+        <%= button_to 'Confirmer la suppression', delete_account_path, method: :delete,
+                class: 'btn',
+                style: 'border-radius:10px; padding:12px 28px; background:#e05252; color:white; border:none; width:100%;',
+                form: { onsubmit: "return document.getElementById('delete-confirm-input').value === 'SUPPRIMER';" } %>
+        <p id="delete-confirm-error" style="display:none; color:#e05252; font-size:13px; margin-top:8px;">
+            Veuillez taper SUPPRIMER pour confirmer.
+        </p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggleSwitch(track) {
+  var isOn = track.style.background === 'rgb(232, 119, 34)';
+  track.style.background = isOn ? '#ddd' : '#e87722';
+  track.children[0].style.left = isOn ? '3px' : '23px';
+}
+</script>

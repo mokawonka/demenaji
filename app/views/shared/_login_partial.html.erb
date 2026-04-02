@@ -70,6 +70,11 @@
 
           <div style="height:1px; background:#f0f0f0; margin:6px 4px;"></div>
 
+          <a class="dropdown-item fs-15" href="<%= settings_path %>"
+            style="border-radius:10px; padding:10px 14px; display:flex; align-items:center; gap:10px; color:#444;">
+            <i class="fa fa-cog" style="width:16px; color:#e87722; font-size:13px;"></i> Paramètres
+          </a>
+
           <%= button_to logout_path, method: :delete,
                 class: 'dropdown-item',
                 form_class: 'p-0 m-0',

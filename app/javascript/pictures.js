@@ -7,107 +7,136 @@ if (dropzone && fileInput) {
 
     let filesArray = [];
 
-    // Prevent label click from bubbling up to dropzone (stops double dialog)
-    const browseLabel = dropzone.querySelector('label');
-    if (browseLabel) {
-        browseLabel.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
-    }
-
+    // ── Render ──────────────────────────────────────────────────────────────
     function renderPreviews() {
         previewContainer.innerHTML = '';
-
-        if (filesArray.length === 0) {
-            fileCountEl.textContent = '';
-            return;
-        }
+        fileCountEl.textContent = filesArray.length
+            ? `${filesArray.length} photo${filesArray.length > 1 ? 's' : ''} sélectionnée${filesArray.length > 1 ? 's' : ''}`
+            : '';
 
         filesArray.forEach((file, index) => {
-            const div = document.createElement('div');
-            div.className = 'relative group';
-            div.style.cssText = 'position:relative;';
-            previewContainer.appendChild(div); // append immediately so order is preserved
+            const url = URL.createObjectURL(file);
 
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                div.innerHTML = `
-                    <img src="${e.target.result}" 
-                        style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:12px; border:1px solid #e5e7eb; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
-                    <button type="button" 
-                            data-index="${index}"
-                            style="position:absolute; top:6px; right:6px; background:#ef4444; color:white;
-                                   width:22px; height:22px; border-radius:50%; border:none; cursor:pointer;
-                                   font-size:12px; display:flex; align-items:center; justify-content:center;
-                                   box-shadow:0 1px 4px rgba(0,0,0,0.2);">
-                        ✕
-                    </button>
-                    <div style="font-size:11px; color:#9ca3af; margin-top:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-                        ${file.name}
-                    </div>
-                `;
-            };
-            reader.readAsDataURL(file);
+            const wrapper = document.createElement('div');
+            wrapper.className = 'relative';
+
+            const img = document.createElement('img');
+            img.src = url;
+            img.onload = () => URL.revokeObjectURL(url);
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.textContent = '✕';
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                filesArray.splice(index, 1);
+                renderPreviews();
+            });
+
+            const name = document.createElement('div');
+            name.className = 'text-xs';
+            name.textContent = file.name;
+
+            wrapper.appendChild(img);
+            wrapper.appendChild(btn);
+            wrapper.appendChild(name);
+            previewContainer.appendChild(wrapper);
         });
-
-        fileCountEl.textContent = `${filesArray.length} photo${filesArray.length === 1 ? '' : 's'} sélectionnée${filesArray.length === 1 ? '' : 's'}`;
     }
 
+    // ── Sync to input on submit ──────────────────────────────────────────────
     function syncFilesToInput() {
         const dt = new DataTransfer();
-        filesArray.forEach(file => dt.items.add(file));
+        filesArray.forEach(f => dt.items.add(f));
         fileInput.files = dt.files;
     }
 
-    // === CLICK TO BROWSE (dropzone background only) ===
-    dropzone.addEventListener('click', function (e) {
-        if (e.target.closest('label') || e.target.closest('button')) return;
-        fileInput.click();
+    // ── Add files ───────────────────────────────────────────────────────────
+    function addFiles(newFiles) {
+        const images = Array.from(newFiles).filter(f => f.type.startsWith('image/'));
+        filesArray = [...filesArray, ...images].slice(0, 10);
+        renderPreviews();
+    }
+
+    // ── Browse via hidden input ──────────────────────────────────────────────
+    const pickerInput = document.createElement('input');
+    pickerInput.type = 'file';
+    pickerInput.multiple = true;
+    pickerInput.accept = 'image/jpeg,image/png,image/webp';
+    pickerInput.style.cssText = 'display:none;';
+    document.body.appendChild(pickerInput);
+
+    pickerInput.addEventListener('change', function() {
+        addFiles(this.files);
+        this.value = '';
     });
 
-    // === FILE SELECTED ===
-    fileInput.addEventListener('change', function () {
-        const newFiles = Array.from(fileInput.files).filter(f => f.type.startsWith('image/'));
-        if (newFiles.length > 0) {
-            filesArray = [...filesArray, ...newFiles].slice(0, 10);
-            renderPreviews();
-        }
+    // Original file input (used only for form submission)
+    fileInput.style.display = 'none';
+
+    // ── Dropzone click ──────────────────────────────────────────────────────
+    dropzone.addEventListener('click', function(e) {
+        if (e.target.closest('button')) return;
+        pickerInput.click();
     });
 
-    // === SYNC FILES ON SUBMIT ===
-    const form = dropzone.closest('form');
-    form.addEventListener('submit', function () {
-        syncFilesToInput();
-    });
+    // ── Browse label click ──────────────────────────────────────────────────
+    const browseLabel = dropzone.querySelector('label');
+    if (browseLabel) {
+        browseLabel.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            pickerInput.click();
+        });
+    }
 
-    // === DRAG & DROP ===
+    // ── Drag & drop ─────────────────────────────────────────────────────────
     dropzone.addEventListener('dragover', (e) => {
         e.preventDefault();
         dropzone.style.borderColor = '#ff8138';
+        dropzone.style.background = '#fff7f0';
     });
 
     dropzone.addEventListener('dragleave', () => {
         dropzone.style.borderColor = '';
+        dropzone.style.background = '';
     });
 
     dropzone.addEventListener('drop', (e) => {
         e.preventDefault();
         dropzone.style.borderColor = '';
-        const newFiles = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
-        if (newFiles.length > 0) {
-            filesArray = [...filesArray, ...newFiles].slice(0, 10);
-            renderPreviews();
-        }
+        dropzone.style.background = '';
+        addFiles(e.dataTransfer.files);
     });
 
-    // === REMOVE IMAGE ===
-    previewContainer.addEventListener('click', (e) => {
-        const btn = e.target.closest('button[data-index]');
-        if (btn) {
-            const index = parseInt(btn.dataset.index);
-            filesArray.splice(index, 1);
-            renderPreviews();
-        }
+    // ── Sync on submit ──────────────────────────────────────────────────────
+    const form = dropzone.closest('form');
+    form.addEventListener('submit', function() {
+        syncFilesToInput();
+    });
+
+}
+
+const pictureUpload = document.getElementById('profile_picture_upload');
+
+if (pictureUpload) {
+
+    pictureUpload.addEventListener('change', function() {
+        if (!this.files || !this.files[0]) return;
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var preview = document.getElementById('imagePreview');
+            if (preview.tagName === 'IMG') {
+                preview.src = e.target.result;
+            } else {
+                var img = document.createElement('img');
+                img.id = 'imagePreview';
+                img.src = e.target.result;
+                img.style.cssText = 'width:120px; height:120px; border-radius:50%; object-fit:cover; border:4px solid #f3f2f2; box-shadow:0 2px 12px rgba(0,0,0,0.10);';
+                preview.replaceWith(img);
+            }
+        };
+        reader.readAsDataURL(this.files[0]);
     });
 
 }
