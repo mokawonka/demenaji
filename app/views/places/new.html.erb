@@ -150,24 +150,33 @@
 
 <script>
 (function() {
-  var rentInput  = document.getElementById('rent-input');
-  var rentUnit   = document.getElementById('rent-unit');
-  var rentInfo   = document.getElementById('rent-converted');
+  var rentInput = document.getElementById('rent-input');
+  var rentUnit  = document.getElementById('rent-unit');
+  var rentInfo  = document.getElementById('rent-converted');
+  var hidden    = document.getElementById('rent-da-hidden');
 
-  function updateRentHint() {
-    var val  = parseFloat(rentInput.value) || 0;
-    var unit = parseInt(rentUnit.value);
-    var da   = val * unit;
-    if (val && unit > 1) {
-      rentInfo.textContent = '= ' + da.toLocaleString('fr-DZ') + ' DA';
-    } else {
-      rentInfo.textContent = '';
-    }
-    // store actual DA value in a hidden field
-    document.getElementById('rent-da-hidden').value = da || '';
+  if (!rentInput || !hidden) return;
+
+  // On edit: convert raw DA to the most readable unit
+  var rawDA = parseInt(rentInput.value) || 0;
+  if (rawDA && rawDA % 10000000 === 0) {
+    rentInput.value = rawDA / 10000000;
+    rentUnit.value  = '10000000';
+  } else if (rawDA && rawDA % 10000 === 0) {
+    rentInput.value = rawDA / 10000;
+    rentUnit.value  = '10000';
   }
 
-  rentInput.addEventListener('input', updateRentHint);
-  rentUnit.addEventListener('change', updateRentHint);
+  function syncHidden() {
+    var val  = parseFloat(rentInput.value) || 0;
+    var unit = parseInt(rentUnit.value) || 1;
+    var da   = Math.round(val * unit);
+    hidden.value = da || '';
+    rentInfo.textContent = (val && unit > 1) ? '= ' + da.toLocaleString('fr-DZ') + ' DA' : '';
+  }
+
+  syncHidden();
+  rentInput.addEventListener('input', syncHidden);
+  rentUnit.addEventListener('change', syncHidden);
 })();
 </script>

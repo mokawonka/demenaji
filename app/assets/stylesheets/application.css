@@ -774,17 +774,6 @@ span {
   box-shadow: none;
 }
 
-#file-count{
-  padding-top:10px;
-  color:grey;
-}
-
-#file-upload{
-  padding-top:10px;
-  color:grey;
-}
-
-
 .orangeinput
 {
   border-color: rgb(255, 200, 98);
@@ -843,38 +832,6 @@ hr { margin: 21px 0 21px 0; }
   padding-bottom : 0px;
   color: #ff7a7a;
 }
-
-
-/********* TABLE ******/
-
-table { 
-  border: 1px solid #dee2e6;
-  border-radius: 21px; 
-  border-spacing: 0;
-  border-collapse: separate;
-  overflow: hidden;
-}
-
-table tr:last-child > td {
-  border-bottom: none;
-}
-table tr:first-child > td {
-  border-top: none;
-}
-
-.bluerow{
-  background-color: rgb(241, 251, 255);
-}
-
-.beigerow{
-  background-color: rgb(255, 247, 223);
-  border-radius: 13px; 
-}
-
-.pinkrow{
-  background-color: rgb(255, 245, 245);
-}
-/**********************/
 
 .button-navbar{
   background: #ffffff;

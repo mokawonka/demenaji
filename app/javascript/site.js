@@ -985,13 +985,8 @@ function update()
 ///////////////////////////////////////////////// CREATE PLACE //////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-if($("#file-upload").length != 0)
+if($("#search-address").length != 0)
 {
-
-    $("#file-upload").change(function(){
-        $("#file-count").text(this.files.length + (this.files.length == 1 ? " file" : " files") + " selected.");
-    });
-
     var addressSearch = $("#search-address");
     var longitude = $("#placeLongitude");
     var latitude = $("#placeLatitude");
@@ -1017,35 +1012,19 @@ if($("#file-upload").length != 0)
     });
 
     // hiding search list when clicking away and adding 1rst address when address is incomplete
-    $(document).on('click', function(e) 
-    {
-        var list = document.getElementById('mbaa-result-address-autocomplete2');
-
+    $(document).on('click', e => {
+        const list = document.getElementById('mbaa-result-address-autocomplete2');
         if (!list) return;
 
-        if (!addressSearch.is(e.target) && addressSearch.has(e.target).length === 0)
-        {
-            var items = list.getElementsByTagName('li');
+        const outside = !addressSearch.is(e.target) && !addressSearch.has(e.target).length;
+        if (!outside) return list.style.display = "";
 
-            if (items.length === 0) {
-                list.style.display = "none";
-                return;
-            }
-
-            var firstli = items[0];
-
-            if(addressSearch.val() && !longitude.val())
-            {
-                addressSearch.val(firstli.textContent); 
-                $(firstli).click();
-            }
-
-            list.style.display = "none";
+        const first = list.querySelector('li');
+        if (first && addressSearch.val() && !longitude.val()) {
+            addressSearch.val(first.textContent);
+            first.click();
         }
-        else {
-            list.style.display = "";
-        }
+        list.style.display = "none";
     });
-
 
 }
