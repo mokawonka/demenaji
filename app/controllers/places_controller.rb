@@ -36,6 +36,7 @@ class PlacesController < ApplicationController
     poster = User.find_by(id: @place.user_id)
     @posterName = poster&.name || "Utilisateur inconnu"
     @posterPicture = poster&.profile_picture
+    @poster_phone = poster&.phone_number
   end
 
 
@@ -81,6 +82,9 @@ class PlacesController < ApplicationController
     @place.number_of_applicants = 0
     @place.visitor_count = 0
 
+    current_user.update(phone_number: params[:user][:phone_number].presence) if params[:user]&.key?(:phone_number)
+
+
     if @place.save
       image_errors = persist_uploaded_images(@place)
       flash[:notice] = 'Annonce ajoutée avec succès.'
@@ -98,6 +102,8 @@ class PlacesController < ApplicationController
       flash[:alert] = 'Vous n\'êtes pas autorisé à modifier cette annonce.'
       return redirect_to(create_place_path)
     end
+
+    current_user.update(phone_number: params[:user][:phone_number].presence) if params[:user]&.key?(:phone_number)
 
     if @place.update(place_params)
       @place.place_pictures.destroy_all if params[:picture_files].present?
