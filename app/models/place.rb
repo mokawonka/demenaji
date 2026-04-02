@@ -19,8 +19,26 @@ class Place < ApplicationRecord
     "#{bedrooms} Pièces"
   end
 
+  def formatted_rent
+    r = rent.to_i
+    if r >= 10_000_000 && (r % 10_000_000).zero?
+      "#{r / 10_000_000} Milliard#{r / 10_000_000 > 1 ? 's' : ''}"
+    elsif r >= 10_000_000
+      whole = r / 10_000_000
+      remainder = (r % 10_000_000) / 1_000_000
+      remainder.zero? ? "#{whole} Milliard#{whole > 1 ? 's' : ''}" : "#{whole},#{remainder} Milliards"
+    elsif r >= 10_000 && (r % 10_000).zero?
+      "#{r / 10_000} Million#{r / 10_000 > 1 ? 's' : ''}"
+    elsif r >= 10_000
+      whole = r / 10_000
+      remainder = (r % 10_000) / 1_000
+      remainder.zero? ? "#{whole} Million#{whole > 1 ? 's' : ''}" : "#{whole},#{remainder} Millions"
+    else
+      "#{r.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1 ').reverse} DA"
+    end
+  end
+
   def composed_title
-    formatted_rent = rent.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1 ').reverse
-    "#{formatted_rent} DA | #{bedroom_label} | #{address}"
+    "#{formatted_rent} | #{bedroom_label} | #{address}"
   end
 end

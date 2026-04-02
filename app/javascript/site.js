@@ -408,6 +408,19 @@ function LoadPlacesFromServer(polygon) {
   });
 }
 
+function parseRentToDA(text) {
+  text = text.trim();
+  if (text.includes('Milliard')) {
+    var num = parseFloat(text.replace(/[^0-9,\.]/g, '').replace(',', '.'));
+    return Math.round(num * 10000000);
+  }
+  if (text.includes('Million')) {
+    var num = parseFloat(text.replace(/[^0-9,\.]/g, '').replace(',', '.'));
+    return Math.round(num * 10000);
+  }
+  // plain DA — strip spaces and "DA"
+  return parseInt(text.replace(/DA/g, '').replace(/\s/g, '').trim()) || 0;
+}
 
 ///////////////
 // updateImp //
@@ -455,9 +468,8 @@ function updateImp(lrent, urent, beds_selection)
         {
             // reading rent
             var a = li[i].getElementsByTagName("h5")[0];
-            var rent_tmp = a.textContent;
-            rent_tmp = rent_tmp.replace(/DA/g, '').replace(/\s/g, '').trim();
-            var rent = parseInt(rent_tmp);
+            var rent = parseRentToDA(a.textContent);
+
 
             // reading bedrooms
             var p = li[i].getElementsByTagName("p")[0]; // 1rst <p>
@@ -506,8 +518,8 @@ function updateImp(lrent, urent, beds_selection)
 
         viewedList.sort(function(a,b){
 
-            var keyA = parseInt(a.getElementsByTagName("h5")[0].textContent.replace(/DA/g, '').replace(/\s/g, '').trim());
-            var keyB = parseInt(b.getElementsByTagName("h5")[0].textContent.replace(/DA/g, '').replace(/\s/g, '').trim());
+            var keyA = parseRentToDA(a.getElementsByTagName("h5")[0].textContent);
+            var keyB = parseRentToDA(b.getElementsByTagName("h5")[0].textContent);
             if (keyA < keyB) return HighestFirst ? 1 : -1;
             else return HighestFirst ? -1 : 1;
         });
@@ -1037,50 +1049,3 @@ if($("#file-upload").length != 0)
 
 
 }
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////// MY PLACES/APPS /////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-var selectedAppOrPlace;
-$('.btn-delete').click(function(e){
-    selectedAppOrPlace = e.target.parentElement;
-});
-
-$('#actionDelete').click(function(e){
-    var btns = document.getElementsByClassName("finalDelete");
-    for (i = 0; i < btns.length; i++)
-    {
-        if(btns[i].parentElement == selectedAppOrPlace){
-            btns[i].click();
-        }
-    }
-});
-
-// Sending a message to an applicant
-$('#MessageModal').on('show.bs.modal', function (event) {
-    var button = $(event.relatedTarget);
-    var recipientId = $("#modal-applicantid");
-    var recipientName = button.data('username');
-    var modal = $(this);
-    recipientId.val(button.data('applicantid'));
-    modal.find('.modal-title').text('New Message to ' + recipientName)
-});
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////// MANAGE ////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function readURL(input) {
-    if (input.files && input.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
-            $('#imagePreview').hide();
-            $('#imagePreview').fadeIn(650);
-        }
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-$("#imageUpload").change(function() {
-    readURL(this);
-});

@@ -743,13 +743,12 @@ span {
   color:rgb(0, 108, 248);
   text-decoration: none;
 }
-.dropdown-item{
-  background-color:white;
-  color:rgb(70, 70, 70);
+.dropdown-menu .dropdown-item:hover {
+  background: #fff7f0;
+  color: #e87722;
 }
-.dropdown-item:hover{
-  background-color:white;
-  color:rgb(34, 130, 255);
+.dropdown-menu .dropdown-item:hover i {
+  color: #e87722;
 }
 
 .btn-submit,
@@ -1169,3 +1168,4 @@ table tr:first-child > td {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+

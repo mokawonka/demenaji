@@ -38,20 +38,26 @@
         <input id="placeLatitude" type="hidden" name="place[gps_latitude]" value="<%= @place.gps_latitude %>">
       </div>
 
-      <!-- Rent -->
+      <!-- Price -->
       <div class="form-group" style="margin-bottom:24px;">
         <label class="fs-17" style="display:block; margin-bottom:8px;">
-          Loyer mensuel (DA) <span class="starcolor">*</span>
+          Prix <span class="starcolor">*</span>
         </label>
         <div class="input-group">
-          <input name="place[rent]"
-                 value="<%= @place.rent %>"
-                 type="number"
-                 class="form-control orangeinput"
-                 style="padding:14px 16px; border-radius:10px;"
-                 placeholder="Ex: 45000">
-          <span class="input-group-text" style="background:#f8f9fa;">DA</span>
+          <input type="hidden" id="rent-da-hidden" name="place[rent]">
+          <input value="<%= @place.rent %>"
+                type="number"
+                class="form-control orangeinput"
+                id="rent-input"
+                style="padding:14px 16px; border-radius:10px 0 0 10px;"
+                placeholder="Ex: 45000">
+          <select id="rent-unit" class="form-control orangeinput" style="max-width:130px; border-radius:0 10px 10px 0; border-left:none;">
+            <option value="1">DA</option>
+            <option value="10000">Millions</option>
+            <option value="10000000">Milliards</option>
+          </select>
         </div>
+        <p class="fs-12d" style="margin-top:6px; color:#888;" id="rent-converted"></p>
       </div>
 
       <div class="form-group" style="margin-bottom:24px;">
@@ -141,3 +147,27 @@
 
   </form>
 </div>
+
+<script>
+(function() {
+  var rentInput  = document.getElementById('rent-input');
+  var rentUnit   = document.getElementById('rent-unit');
+  var rentInfo   = document.getElementById('rent-converted');
+
+  function updateRentHint() {
+    var val  = parseFloat(rentInput.value) || 0;
+    var unit = parseInt(rentUnit.value);
+    var da   = val * unit;
+    if (val && unit > 1) {
+      rentInfo.textContent = '= ' + da.toLocaleString('fr-DZ') + ' DA';
+    } else {
+      rentInfo.textContent = '';
+    }
+    // store actual DA value in a hidden field
+    document.getElementById('rent-da-hidden').value = da || '';
+  }
+
+  rentInput.addEventListener('input', updateRentHint);
+  rentUnit.addEventListener('change', updateRentHint);
+})();
+</script>

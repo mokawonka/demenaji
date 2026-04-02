@@ -38,15 +38,45 @@
         <button type="button" class="btn btn-link pr-0 pr-sm-3 pl-0" data-toggle="dropdown">
             <%= image_tag current_user.profile_picture.attached? ? current_user.profile_picture : 'profile_pic_mini.png' , class: 'mini-profile-pic' %>
         </button>
-        <div class="dropdown-menu dropdown-menu-right">
-          <p class="fs-12d text-center text-uppercase mb-0"><%= current_user.name %></p>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item fs-15" href="<%= my_profile_path %>">Mon profil</a>
-          <a class="dropdown-item fs-15" href="<%= my_places_path %>">Mes Annonces</a>
-          <a class="dropdown-item fs-15" href="<%= my_applications_path %>">Mes Demandes</a>
-          <a class="dropdown-item fs-15" href="<%= favorites_path %>">Mes Favoris</a>
-          <div class="dropdown-divider"></div>
-          <%= button_to 'Déconnexion', logout_path, method: :delete, class: 'dropdown-item text-center', form_class: 'p-0 m-0' %>
+        <div class="dropdown-menu dropdown-menu-right"
+            style="border-radius:14px; border:1px solid #f0f0f0; box-shadow:0 4px 24px rgba(0,0,0,0.08); padding:8px; min-width:220px;">
+
+          <%# User header %>
+          <div style="padding:12px 14px 10px; margin-bottom:4px;">
+            <p style="margin:0; font-size:13px; font-weight:500; color:#e87722; text-transform:uppercase; letter-spacing:0.5px;">
+              <%= current_user.name %>
+            </p>
+            <p style="margin:0; font-size:12px; color:#bbb;"><%= current_user.email %></p>
+          </div>
+
+          <div style="height:1px; background:#f0f0f0; margin:0 4px 6px;"></div>
+
+          <a class="dropdown-item fs-15" href="<%= my_profile_path %>"
+            style="border-radius:10px; padding:10px 14px; display:flex; align-items:center; gap:10px; color:#444;">
+            <i class="fa fa-user" style="width:16px; color:#e87722; font-size:13px;"></i> Mon profil
+          </a>
+          <a class="dropdown-item fs-15" href="<%= my_places_path %>"
+            style="border-radius:10px; padding:10px 14px; display:flex; align-items:center; gap:10px; color:#444;">
+            <i class="fa fa-home" style="width:16px; color:#e87722; font-size:13px;"></i> Mes annonces
+          </a>
+          <a class="dropdown-item fs-15" href="<%= my_applications_path %>"
+            style="border-radius:10px; padding:10px 14px; display:flex; align-items:center; gap:10px; color:#444;">
+            <i class="fa fa-file-alt" style="width:16px; color:#e87722; font-size:13px;"></i> Mes demandes
+          </a>
+          <a class="dropdown-item fs-15" href="<%= favorites_path %>"
+            style="border-radius:10px; padding:10px 14px; display:flex; align-items:center; gap:10px; color:#444;">
+            <i class="fa fa-heart" style="width:16px; color:#e87722; font-size:13px;"></i> Mes favoris
+          </a>
+
+          <div style="height:1px; background:#f0f0f0; margin:6px 4px;"></div>
+
+          <%= button_to logout_path, method: :delete,
+                class: 'dropdown-item',
+                form_class: 'p-0 m-0',
+                style: 'border-radius:10px; padding:10px 14px; display:flex; align-items:center; gap:10px; color:#e05252; width:100%; background:none; border:none; cursor:pointer; font-size:15px;' do %>
+            <i class="fa fa-sign-out-alt" style="width:16px; font-size:13px;"></i> Déconnexion
+          <% end %>
+
         </div>
       </div>
     </div>
