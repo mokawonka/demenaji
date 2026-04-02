@@ -7,7 +7,7 @@ class SessionsController < ApplicationController
       session[:user_id] = user.id
       redirect_to root_path
     else
-      flash.now[:alert] = 'Invalid email or password.'
+      flash.now[:alert] = 'Email ou mot de passe non valide.'
       render :new, status: :unprocessable_entity
     end
   end

@@ -41,4 +41,10 @@ Rails.application.routes.draw do
   post "messages", to: "messages#create", as: :create_message
   get "messages", to: "conversations#index", as: :messages
 
+  get  "forgot_password", to: "password_resets#new",   as: "forgot_password"
+  post "forgot_password", to: "password_resets#create"
+
+  get  "reset_password/:token", to: "password_resets#edit",  as: "reset_password"
+  patch "reset_password/:token", to: "password_resets#update"
+
 end

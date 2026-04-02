@@ -1,0 +1,14 @@
+<h2 class="title">Mot de passe oublié ?</h2>
+
+<%= form_with url: forgot_password_path, method: :post, local: true do |f| %>
+  <div class="form-group">
+    <label>Votre adresse email</label>
+    <input type="email" name="email" class="form-control" required>
+  </div>
+
+  <%= f.submit "Envoyer le lien de réinitialisation", class: "btn btn-info btn-block" %>
+<% end %>
+
+<p class="text-center mt-3">
+  <%= link_to "← Retour à la connexion", "/login", class: "text-muted" %>
+</p>

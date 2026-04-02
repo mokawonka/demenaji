@@ -1,0 +1,19 @@
+<h2 class="title">Définir un nouveau mot de passe</h2>
+
+<%= form_with url: reset_password_path(params[:token]), method: :patch, local: true do |f| %>
+  <div class="form-group">
+    <label>Nouveau mot de passe</label>
+    <input type="password" name="user[password]" class="form-control" required>
+  </div>
+
+  <div class="form-group">
+    <label>Confirmation du mot de passe</label>
+    <input type="password" name="user[password_confirmation]" class="form-control" required>
+  </div>
+
+  <%= f.submit "Réinitialiser le mot de passe", class: "btn btn-info btn-block" %>
+<% end %>
+
+<p class="text-center mt-3">
+  <%= link_to "← Retour à la connexion", "/login", class: "text-muted" %>
+</p>

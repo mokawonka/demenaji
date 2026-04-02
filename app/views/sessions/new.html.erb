@@ -10,5 +10,10 @@
         <label>Mot de passe</label>
         <input type="password" name="password" class="form-control">
     </div>
-    <button type="submit" class="btn btn-submit">Login</button>
+
+    <div class="text-end mt-2 mb-3">
+        <%= link_to "Mot de passe oublié ?", forgot_password_path, class: "text-muted small" %>
+    </div>
+
+    <button type="submit" class="btn btn-submit">Se connecter</button>
 </form>
