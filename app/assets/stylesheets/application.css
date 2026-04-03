@@ -226,83 +226,133 @@ label{
   min-width: 330px;
 }
 
-.favorites{
-  padding-top:    120px;
-  padding-right:  3rem !important;
-  padding-left:   3rem !important;
-  padding-bottom: 3rem !important;
-}
-
-.list-group-fav{
-  margin-bottom: 0vh;
-  padding-left:0;
-  padding-right:0;
-  margin-left:0vh;
-  margin-right:0vh;
-  overflow:scroll;
+/* ── Scrollable list container ──────────────── */
+.list-group {
+  max-height: calc(100vh - 230px);
+  overflow-y: auto;
   overflow-x: hidden;
+  padding: 8px 0 12px;
+  margin: 0;
   scrollbar-width: thin;
+  scrollbar-color: #f97316 transparent;
 }
 
-.list-group{
-  max-height: calc(100vh - 230px); /* percentage of viewport */
-  margin-bottom: 0vh;
-  padding-left:0;
-  padding-right:0;
-  margin-left:0vh;
-  margin-right:0vh;
-  overflow:scroll;
-  overflow-x: hidden;
-  scrollbar-width: thin;
-  padding-bottom:5px;
-  padding-top:4px;
+.list-group::-webkit-scrollbar {
+  width: 4px;
 }
 
-
-.list-group-item{
-  max-height: 20vh;
+.list-group::-webkit-scrollbar-thumb {
+  background: #f97316;
+  border-radius: 99px;
 }
 
+/* ── Card item ──────────────────────────────── */
 .ad-preview {
-  background-color: white;
-  outline:none;
-  border-radius:0px !important;
-}
-
-.ad-preview:focus {
-  background-color: white;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  background: #fff;
+  border: none;
+  border-bottom: 1px solid #f3f4f6;
+  border-radius: 0 !important;
+  outline: none;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s, box-shadow 0.15s;
+  position: relative;
 }
 
 .ad-preview:hover {
-  background-color: white;
-  box-shadow: 0 0 9px rgba(100, 100, 100, 1);
+  background: #fff7ed;
+  box-shadow: inset 3px 0 0 #f97316;
+  text-decoration: none;
+  color: inherit;
+}
+
+.ad-preview:focus {
+  background: #fff7ed;
+  outline: none;
+}
+
+/* ── Thumbnail ──────────────────────────────── */
+.ad-thumb {
+  flex-shrink: 0;
 }
 
 .imgpreview {
-  display: block;
-  max-width: 15vmin;
-  max-height: 15vmin;
-  max-width: 15vm;  /*fallback for ie9*/
-  max-height: 15vm; /*fallback for ie9*/
-  border-radius:7px;
+  width: 72px;
+  height: 72px;
   object-fit: cover;
-  width: 15vmin;
-  height: 15vmin;
-  width: 15vm;  /*fallback for ie9*/
-  height: 15vm; /*fallback for ie9*/
+  border-radius: 10px;
+  display: block;
+  background: #f3f4f6;
 }
 
-#rentandbeds{
-  padding-left:0px;
-  padding-right:0px;
-}
-
-@media screen and (min-height: 477px) {
-  #rentandbeds{
-    padding-top:3vmin;
+@media (max-width: 576px) {
+  .imgpreview {
+    width: 58px;
+    height: 58px;
   }
 }
 
+/* ── Text body ──────────────────────────────── */
+.ad-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.ad-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ad-rent {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f97316;
+  margin: 0 0 2px;
+  line-height: 1.2;
+}
+
+.ad-beds {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #6b7280;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.ad-address {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 5px 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Heart icon ─────────────────────────────── */
+.heart {
+  font-size: 15px;
+  color: #d1d5db;
+  flex-shrink: 0;
+  transition: color 0.15s, transform 0.15s;
+  cursor: pointer;
+  padding: 2px;
+}
+
+.heart:hover {
+  color: #f97316;
+  transform: scale(1.2);
+}
+
+.heart.faved {
+  color: #f97316;
+}
 
 #admap {
   position: relative;
@@ -369,61 +419,144 @@ span {
 }
 
 /* ******** CAROUSEL ************/
-
-#maincarousel{
-  background-color: #ece0ca;
-  width: auto;
-  /* height: 300px; */
-  border-radius: 7px;
+/* ── Main carousel container ───────────────── */
+#maincarousel {
+  background-color: #1a1a1a;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
 }
 
-#carouselcenter:hover{
-  cursor: pointer;
+@media (max-width: 576px) {
+  #maincarousel { height: 220px; }
+  .carousel-item img { height: 220px; }
 }
 
-.carousel-item{
-  border-radius: 7px;
+@media (min-width: 576px) and (max-width: 992px) {
+  #maincarousel { height: 320px; }
+  .carousel-item img { height: 320px; }
+}
+
+@media (min-width: 992px) {
+  #maincarousel { height: 420px; }
+  .carousel-item img { height: 420px; }
+}
+
+/* ── Slides ─────────────────────────────────── */
+.carousel-item {
+  border-radius: 0;
   overflow: hidden;
 }
 
-@media screen and (max-width: 576px) {
-  #maincarousel{
-    height: 200px;
-  }
-
-  .carousel-item > img{
-    height: 200px;
-  }
-}
-
-@media screen and (min-width: 576px) {
-  #maincarousel{
-    height: 300px;
-  }
-
-  .carousel-item > img{
-    height: 300px;
-  }
-}
-
-.carousel-item > img{
+.carousel-item img {
+  width: 100%;
   object-fit: cover;
-  border-radius: 7px;
-
-  /* height:300px; */
-  width:auto;
-
   display: block;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: auto;
-  margin-bottom: auto;
+  transition: transform 0.4s ease;
+}
+
+.carousel-item.active img {
+  transform: scale(1.00);
+}
+
+/* ── Prev / Next controls ───────────────────── */
+.carousel-control-prev,
+.carousel-control-next {
+  width: 48px;
+  height: 48px;
+  background: rgba(249, 115, 22, 0.85);
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+  bottom: auto;
+  opacity: 0;
+  transition: opacity 0.2s, background 0.2s, transform 0.2s;
+}
+
+.carousel-control-prev { left: 14px; }
+.carousel-control-next { right: 14px; }
+
+#maincarousel:hover .carousel-control-prev,
+#maincarousel:hover .carousel-control-next {
+  opacity: 1;
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+  background: #ea6900;
+  transform: translateY(-50%) scale(1.08);
 }
 
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-  height: 70px;
-  width: 70px;
+  width: 18px;
+  height: 18px;
+  filter: brightness(0) invert(1);
+}
+
+/* ── Dot indicators ─────────────────────────── */
+.carousel-indicators {
+  bottom: 12px;
+  gap: 6px;
+  margin: 0;
+  align-items: center;
+}
+
+.carousel-indicators [data-bs-target] {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.5);
+  margin: 0;
+  padding: 0;
+  transition: background 0.2s, transform 0.2s;
+  flex-shrink: 0;
+}
+
+.carousel-indicators .active {
+  background: #f97316;
+  transform: scale(1.35);
+}
+
+/* ── Photo counter badge (optional) ─────────── */
+.carousel-badge {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 99px;
+  pointer-events: none;
+  z-index: 10;
+  letter-spacing: 0.03em;
+}
+
+/* ── Empty state (no photos) ────────────────── */
+.carousel-empty {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.carousel-empty i {
+  font-size: 2.5rem;
+  color: #d1d5db;
+}
+
+/* ── Cursor ─────────────────────────────────── */
+#carouselcenter,
+#maincarousel {
+  cursor: pointer;
 }
 
 #carouselModal {
@@ -1126,3 +1259,56 @@ hr { margin: 21px 0 21px 0; }
   to { transform: rotate(360deg); }
 }
 
+/* ── Mapbox popup reset & restyle ───────────── */
+.mapboxgl-popup-content {
+  padding: 0;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border: none;
+  overflow: hidden;
+  min-width: 160px;
+  font-family: inherit;
+}
+
+.mapboxgl-popup-tip {
+  display: none; /* hide the default triangle tip */
+}
+
+/* ── Inner layout ───────────────────────────── */
+.map-popup {
+  display: flex;
+  flex-direction: column;
+}
+
+.map-popup-rent {
+  background: #f97316;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 14px;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+}
+
+.map-popup-type {
+  background: #fff;
+  color: #374151;
+  font-size: 12px;
+  padding: 6px 14px 8px;
+  text-transform: capitalize;
+  border-top: 1px solid #f3f4f6;
+}
+
+.map-popup a {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.map-popup a:hover .map-popup-rent {
+  background: #ea6900;
+}
+
+.map-popup a:hover .map-popup-type {
+  color: #f97316;
+}

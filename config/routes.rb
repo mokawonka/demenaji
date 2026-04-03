@@ -53,5 +53,4 @@ Rails.application.routes.draw do
   patch '/settings/notifications', to: 'users#update_notifications', as: :update_notifications
   delete '/settings/account',  to: 'users#delete_account',   as: :delete_account
 
-
 end

@@ -61,7 +61,7 @@ $(document).on("click", ".heart", function(e) {
     e.preventDefault();
 
     var $t = $(this);
-    var placeid = $t.closest("li").find("p").eq(3).text().trim();
+    var placeid = getIdFromLi($t.closest("li")[0]);
     var isFaved = $t.hasClass("fa-solid");
     var handlerurl = isFaved ? '/Map?handler=RemoveFavorite' : '/Map?handler=AddFavorite';
 
@@ -185,9 +185,6 @@ if($("#admap").length != 0)
 //////////////////////////////////////////////////// INDEX //////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// tooltip modern styling
-$('[data-toggle="tooltip"]').tooltip();
-
 function toggle_visibility(id1, id2) 
 {
     var e = document.getElementById(id1);
@@ -245,36 +242,30 @@ function jitterDuplicates(features) {
 ///////////////
 // updateMap //
 ///////////////
-function updateMap()
-{
-    showedFeatures = [];
+function updateMap() {
 
-    try
-    {    
+  showedFeatures = [];
+
+  try {
         var li = viewedList;
         var ll = li.length;
-        for (i = 0; i < ll; i++)
-        {
-            var rent    = li[i].getElementsByTagName("h5")[0].textContent;
-            var type    = li[i].getElementsByTagName("p")[0].textContent;
-            var rawlong = li[i].getElementsByTagName("p")[1].textContent;
-            var rawlat  = li[i].getElementsByTagName("p")[2].textContent;
-            var rawid   = li[i].getElementsByTagName("p")[3].textContent;
-            var adlocation = [parseFloat(rawlong), parseFloat(rawlat)];
-
+        for (var i = 0; i < ll; i++) {
             var feature = {
                 "type": "Feature",
-                "geometry": { "type": "Point", "coordinates": adlocation },
-                "properties": { "name": rawid, "rent": rent, "placetype": type }
+                "geometry": {
+                "type": "Point",
+                "coordinates": [getLngFromLi(li[i]), getLatFromLi(li[i])]
+                },
+                "properties": {
+                "name":      getIdFromLi(li[i]),
+                "rent":      li[i].querySelector('.ad-rent').textContent,
+                "placetype": li[i].querySelector('.ad-beds').textContent
+                }
             };
-
-            if (li[i].style.display != "none") {
-                showedFeatures.push(feature);
-            }
+            if (li[i].style.display != "none") showedFeatures.push(feature);
         }
 
         showedFeatures = jitterDuplicates(showedFeatures);
-
         var mapdata = { "type": "FeatureCollection", "features": showedFeatures };
 
         if (!map.getSource('places')) {
@@ -396,7 +387,6 @@ function LoadPlacesFromServer(polygon) {
     },
     success: function(response) {
       $("#ulist").html(response.html);
-      $('[data-toggle="tooltip"]').tooltip();
       update();
       lastLoadedZoom = zoom;
     },
@@ -422,116 +412,75 @@ function parseRentToDA(text) {
   return parseInt(text.replace(/DA/g, '').replace(/\s/g, '').trim()) || 0;
 }
 
+function getRentFromLi(li) {
+  return parseRentToDA(li.querySelector('.ad-rent').textContent);
+}
+function getBedsFromLi(li) {
+  return li.querySelector('.ad-beds').textContent.trim();
+}
+function getLngFromLi(li)  { return parseFloat(li.querySelectorAll('p.d-none')[0].textContent); }
+function getLatFromLi(li)  { return parseFloat(li.querySelectorAll('p.d-none')[1].textContent); }
+function getIdFromLi(li)   { return li.querySelectorAll('p.d-none')[2].textContent.trim(); }
+
 ///////////////
 // updateImp //
 ///////////////
-function updateImp(lrent, urent, beds_selection)
-{
-    viewedList = [];
+function updateImp(lrent, urent, beds_selection) {
+  viewedList = [];
 
-    function AllUnchecked()
-    {
-        function filterIsActive(beds)
-        {
-            var id;
-            if(beds==0) id="#0bed";
-            if(beds==1) id="#1bed";
-            if(beds==2) id="#2bed";
-            if(beds==3) id="#3bed";
-            if(beds==4) id="#4bed";
+  function AllUnchecked() {
+    for (var i = 0; i < 5; i++) {
+      var id = ["#0bed","#1bed","#2bed","#3bed","#4bed"][i];
+      if ($(id).hasClass("button-filter-activ") || $(id).hasClass("button-filter-lg-activ")) return false;
+    }
+    return true;
+  }
 
-            if($(id).hasClass("button-filter-activ") || $(id).hasClass("button-filter-lg-activ")){
-                return true;
-            }
-            return false;
-        }
+  try {
+    var li = ul.getElementsByTagName('li');
+    var ll = li.length;
 
-        var i;
-        var cpt=0;
-        for(i = 0; i < 5; i++){
-            if(!filterIsActive(i)){
-                cpt=cpt+1;
-            }
-        }
-        return cpt == 5 ? true : false;
+    for (var i = 0; i < ll; i++) {
+      var rent = getRentFromLi(li[i]);
+
+      var beds_tmp = getBedsFromLi(li[i]);
+      var beds;
+      if (beds_tmp === "STUDIO") beds = 0;
+      else {
+        beds = parseInt(beds_tmp);
+        beds = beds >= 4 ? 4 : beds;
+      }
+
+      var isBedSelected = beds_selection[beds] == 1;
+      if (AllUnchecked()) isBedSelected = true;
+
+      var location = [getLngFromLi(li[i]), getLatFromLi(li[i])];
+      var mapbounds = map.getBounds();
+      var isInsideMap = inbounds(location,
+        mapbounds.getNorthEast().toArray(),
+        mapbounds.getSouthWest().toArray());
+
+      var isRentMatch = (rent >= lrent) && (rent <= urent || urent >= RENT_MAX);
+
+      li[i].style.display = (isRentMatch && isBedSelected && isInsideMap) ? "" : "none";
     }
 
+    viewedList = $('#ulist > li').filter(function() {
+      return $(this).css("display") != "none";
+    });
 
-    var i, rent, beds, rent_tmp, beds_tmp, a, p;
+    viewedList.sort(function(a, b) {
+      var keyA = getRentFromLi(a);
+      var keyB = getRentFromLi(b);
+      if (keyA < keyB) return HighestFirst ? 1 : -1;
+      return HighestFirst ? -1 : 1;
+    });
 
-    try
-    {
-        var li = ul.getElementsByTagName('li');
+    $.each(viewedList, function(i, lii) { ul.append(lii); });
 
-        var ll = li.length;
-        for (i = 0; i < ll; i++)
-        {
-            // reading rent
-            var a = li[i].getElementsByTagName("h5")[0];
-            var rent = parseRentToDA(a.textContent);
-
-
-            // reading bedrooms
-            var p = li[i].getElementsByTagName("p")[0]; // 1rst <p>
-            var beds_tmp = p.textContent;
-
-            if(beds_tmp.trim() === "STUDIO")
-            {
-                beds = 0;
-            }
-            else
-            {
-                beds = parseInt(beds_tmp);
-                beds = beds >= 4 ? 4 : beds;
-            }
-            
-            var isBedSelected = beds_selection[beds]==1;
-            if(AllUnchecked()) isBedSelected = true;
-
-            // checking if marker is inside map's current bounding box
-            var isInsideMap;
-            var rawlong = li[i].getElementsByTagName("p")[1].textContent; // 2nd <p>
-            var rawlat = li[i].getElementsByTagName("p")[2].textContent;  // 3rd <p>
-            var location = [parseFloat(rawlong), parseFloat(rawlat)];
-            var mapbounds = map.getBounds();
-
-            if(inbounds(location, 
-                        mapbounds.getNorthEast().toArray(), 
-                        mapbounds.getSouthWest().toArray())) isInsideMap = true;
-            else isInsideMap = false;
-
-
-            var sliderMax = RENT_MAX;
-            var isRentMatch = (rent >= lrent) && (rent <= urent || urent >= sliderMax);
-
-
-            // filtering
-            if (isRentMatch && isBedSelected && isInsideMap) {
-                li[i].style.display = "";
-            } else {
-                li[i].style.display = "none";
-            }
-        }
-
-        // finish by sorting the list by highest or lowest rent // TO BE OPTIMIZED
-        viewedList = $('#ulist > li').filter(function() { return $(this).css("display") != "none" });
-
-        viewedList.sort(function(a,b){
-
-            var keyA = parseRentToDA(a.getElementsByTagName("h5")[0].textContent);
-            var keyB = parseRentToDA(b.getElementsByTagName("h5")[0].textContent);
-            if (keyA < keyB) return HighestFirst ? 1 : -1;
-            else return HighestFirst ? -1 : 1;
-        });
-
-        $.each(viewedList, function(i, lii){
-            ul.append(lii); /* This removes li from the old spot and moves it */
-        });
-
-    }
-    catch(error){    
-        console.log("ERROR:", error.message, error.stack);
-    }
+  } catch(error) {
+    console.log("ERROR:", error.message, error.stack);
+  }
 }
 
 
@@ -808,15 +757,23 @@ if($("#map").length != 0)
             });
         });
 
-        map.on('click', 'places', function (e) {
-            // displays popup
+        map.on('click', 'places', function(e) {
             map.getCanvas().style.cursor = 'pointer';
             var coordinates = e.features[0].geometry.coordinates;
-            var description = e.features[0].properties.rent + " | " + e.features[0].properties.placetype.toLowerCase();
-            var place_url =  "Place/" + e.features[0].properties.name;
+            var rent        = e.features[0].properties.rent;
+            var type        = e.features[0].properties.placetype.toLowerCase();
+            var place_url   = "Place/" + e.features[0].properties.name;
+
             popup.setLngLat(coordinates)
-                .setHTML('<a href= "' + place_url + '" >' + description + '</a>')
-                .addTo(map);            
+                .setHTML(
+                '<div class="map-popup">' +
+                    '<a href="' + place_url + '">' +
+                    '<div class="map-popup-rent">' + rent + '</div>' +
+                    '<div class="map-popup-type">' + type + '</div>' +
+                    '</a>' +
+                '</div>'
+                )
+                .addTo(map);
         });
 
         map.on('click', function (e) {
@@ -832,27 +789,32 @@ if($("#map").length != 0)
 
     // Change markers on li hover
     $('#ulist').on('mouseenter', 'li', function() {
-        if (!map.getLayer('places')) return;
-        try {
-            var placeid = this.getElementsByTagName("p")[3].textContent.trim();
-            var lng     = parseFloat(this.getElementsByTagName("p")[1].textContent);
-            var lat     = parseFloat(this.getElementsByTagName("p")[2].textContent);
-            var desc    = this.getElementsByTagName("h5")[0].textContent + " | " +
-                        this.getElementsByTagName("p")[0].textContent.toLowerCase();
-            var place_url = "Place/" + placeid;
+    if (!map.getLayer('places')) return;
+    try {
+        var placeid   = getIdFromLi(this);
+        var lng       = getLngFromLi(this);
+        var lat       = getLatFromLi(this);
+        var rent      = this.querySelector('.ad-rent').textContent;
+        var type      = this.querySelector('.ad-beds').textContent.toLowerCase();
+        var place_url = "Place/" + placeid;
 
-            map.setLayoutProperty("places", 'icon-image', [
-                "case", ["==", ["get", "name"], placeid],
-                "red-marker", "default-marker"
-            ]);
+        map.setLayoutProperty("places", 'icon-image', [
+        "case", ["==", ["get", "name"], placeid],
+        "red-marker", "default-marker"
+        ]);
+        map.getCanvas().style.cursor = 'pointer';
 
-            map.getCanvas().style.cursor = 'pointer';
-
-            popup.setLngLat([lng, lat])
-                .setHTML('<a href="' + place_url + '">' + desc + '</a>')
-                .addTo(map);
-        }
-        catch(error) {}
+        popup.setLngLat([lng, lat])
+        .setHTML(
+            '<div class="map-popup">' +
+            '<a href="' + place_url + '">' +
+                '<div class="map-popup-rent">' + rent + '</div>' +
+                '<div class="map-popup-type">' + type + '</div>' +
+            '</a>' +
+            '</div>'
+        )
+        .addTo(map);
+    } catch(error) {}
 
     }).on('mouseleave', 'li', function() {
         if (!map.getLayer('places')) return;

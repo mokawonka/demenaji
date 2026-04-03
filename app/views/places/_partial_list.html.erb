@@ -2,39 +2,34 @@
   <% place = showedplace[:place] %>
   <li>
     <a href="/Place/<%= place.id %>"
-       class="list-group-item list-group-item-action flex-column align-items-start ad-preview">
-      <div class="row">
+       class="list-group-item list-group-item-action ad-preview">
+      <div class="ad-thumb">
+        <% if place.place_pictures.any? %>
+          <%= image_tag place.place_pictures.first.thumbnail_url, class: 'imgpreview' %>
+        <% else %>
+          <%= image_tag 'default-place.png', class: 'imgpreview' %>
+        <% end %>
+      </div>
 
-        <div class="col-4">
-          <% if place.place_pictures.any? %>
-            <%= image_tag place.place_pictures.first.thumbnail_url, class: 'imgpreview' %>
+      <div class="ad-body">
+        <div class="ad-top">
+          <div>
+            <p class="ad-rent"><%= place.formatted_rent %></p>
+            <p class="ad-beds"><%= place.bedroom_label.upcase %></p>
+          </div>
+          <% if showedplace[:is_faved] %>
+            <i class="heart fa-solid fa-heart faved"></i>
           <% else %>
-            <%= image_tag 'default-place.png', class: 'imgpreview' %>
+            <i class="heart fa-regular fa-heart"></i>
           <% end %>
         </div>
 
-        <div class="col-6 offset-2">
-          <div class="d-flex w-100 justify-content-between">
-
-            <div id="rentandbeds">
-              <h5 class="fw-211"><%= place.formatted_rent %></h5>
-              <p class="fs-17"><%= place.bedroom_label.upcase %></p>
-            </div>
-
-            <% if showedplace[:is_faved] %>
-              <i class="heart fa-solid fa-heart" data-toggle="tooltip" title="Retirer des favoris"></i>
-            <% else %>
-              <i class="heart fa-regular fa-heart" data-toggle="tooltip" title="Ajouter aux favoris"></i>
-            <% end %>
-
-          </div>
-
-          <p class="d-none"><%= place.gps_longitude %></p>
-          <p class="d-none"><%= place.gps_latitude %></p>
-          <p class="d-none"><%= place.id %></p>
-        </div>
-
+        <p class="ad-address"><%= place.address %></p>
       </div>
+
+      <p class="d-none"><%= place.gps_longitude %></p>
+      <p class="d-none"><%= place.gps_latitude %></p>
+      <p class="d-none"><%= place.id %></p>
     </a>
   </li>
 <% end %>

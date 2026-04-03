@@ -52,7 +52,7 @@
           <%# Body %>
           <div style="padding:16px 18px 12px;">
             <p class="fav-rent" style="margin:0 0 4px; font-size:22px; font-weight:400; color:rgb(65, 133, 65);">
-              <%= number_with_delimiter(place.rent) %> DA
+              <%= place.formatted_rent %>
             </p>
             <p class="fav-beds" style="margin:0 0 8px; font-size:13px; color:#999; text-transform:uppercase; letter-spacing:0.5px;">
               <%= place.bedroom_label %>
