@@ -86,9 +86,9 @@
       </div>
     </div>
   <% else %>
-    <div class="btn-toolbar">
-      <li class="nav-item"><a class="menu-nav-link" href="<%= register_path %>">S'inscrire</a></li>
-      <li class="nav-item"><a class="menu-nav-link" href="<%= login_path %>">Se connecter</a></li>
+    <div class="btn-toolbar align-items-center">
+      <a href="<%= register_path %>" class="nav-btn-outline mr-2">S'inscrire</a>
+      <a href="<%= login_path %>"   class="nav-btn-solid">Se connecter</a>
     </div>
   <% end %>
 </ul>
