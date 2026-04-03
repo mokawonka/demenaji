@@ -1,5 +1,5 @@
 (() => {
-  const MAX_FILES  = 10;
+  const MAX_FILES  = 20;
   const MAX_BYTES  = 8 * 1024 * 1024;
   const ACCEPTED   = ['image/jpeg', 'image/png', 'image/webp'];
 

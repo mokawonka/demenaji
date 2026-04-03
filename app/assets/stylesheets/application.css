@@ -1312,3 +1312,135 @@ hr { margin: 21px 0 21px 0; }
 .map-popup a:hover .map-popup-type {
   color: #f97316;
 }
+
+/* ── Wrapper card ───────────────────────────── */
+.listing-meta-card {
+  background: #fff;
+  border: 1px solid #f3f4f6;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ── Meta info row (applicants + date) ─────── */
+.listing-meta-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.listing-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.listing-meta-item i {
+  font-size: 13px;
+  color: #f97316;
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* ── Poster row ─────────────────────────────── */
+.poster-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: #fff7ed;
+  border-radius: 12px;
+  border: 1px solid #fed7aa;
+}
+
+.poster-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid #f97316;
+}
+
+.poster-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.poster-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.poster-label {
+  font-size: 11px;
+  color: #f97316;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Message form ───────────────────────────── */
+.message-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.message-form-group {
+  width: 100%;
+}
+
+.message-textarea {
+  width: 100%;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #1f2937;
+  resize: none;
+  transition: border-color 0.15s;
+  outline: none;
+  line-height: 1.5;
+}
+
+.message-textarea::placeholder {
+  color: #9ca3af;
+}
+
+.message-textarea:focus {
+  border-color: #17a2b8;
+  box-shadow: 0 0 0 3px rgba(23, 162, 184, 0.15);
+}
+
+.message-submit-btn {
+  width: 100%;
+  background: #17a2b8;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.message-submit-btn:hover {
+  background: #138496;
+}
+
+.message-submit-btn:active {
+  transform: scale(0.98);
+}
