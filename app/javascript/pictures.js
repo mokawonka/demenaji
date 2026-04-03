@@ -10,8 +10,8 @@
 
   if (!dropzone || !fileInput || !preview) return;
 
-  // UI-only state
   let files = [];
+  let mainIndex = 0;
 
   // ── EVENTS ────────────────────────────────
   dropzone.addEventListener('click', (e) => {
@@ -34,17 +34,20 @@
   });
 
   fileInput.addEventListener('change', () => {
-    handleFiles(fileInput.files);
+    const selectedFiles = Array.from(fileInput.files);
 
-    // IMPORTANT: reset safely
+    // 🔥 CRITICAL FIX: defer heavy work
+    requestAnimationFrame(() => {
+      handleFiles(selectedFiles);
+    });
+
     setTimeout(() => {
       fileInput.value = '';
     }, 0);
   });
 
-  // ── CORE LOGIC ────────────────────────────
+  // ── CORE ──────────────────────────────────
   function handleFiles(fileList) {
-    const incoming = Array.from(fileList);
     const remaining = MAX_FILES - files.length;
 
     if (remaining <= 0) {
@@ -52,7 +55,7 @@
       return;
     }
 
-    incoming.slice(0, remaining).forEach(file => {
+    fileList.slice(0, remaining).forEach(file => {
       const entry = { file, objectUrl: null, error: null };
 
       if (!ACCEPTED.includes(file.type)) {
@@ -66,30 +69,34 @@
       files.push(entry);
     });
 
-    if (incoming.length > remaining) {
-      showToast(`Seulement ${remaining} ajoutées.`);
-    }
-
     render();
   }
 
   // ── RENDER ────────────────────────────────
   function render() {
     preview.innerHTML = '';
-    files.forEach((entry, i) => renderCard(entry, i));
+
+    files.forEach((entry, i) => {
+      preview.appendChild(renderCard(entry, i));
+    });
+
     updateCount();
   }
 
   function renderCard({ objectUrl, file, error }, index) {
     const card = document.createElement('div');
     card.className = 'preview-card';
+    card.draggable = true;
+    card.dataset.index = index;
 
+    // IMAGE
     if (objectUrl && !error) {
       const img = document.createElement('img');
       img.src = objectUrl;
       card.appendChild(img);
     }
 
+    // ERROR
     if (error) {
       const err = document.createElement('div');
       err.className = 'error-overlay';
@@ -97,38 +104,104 @@
       card.appendChild(err);
     }
 
+    // INDEX BADGE
+    const badge = document.createElement('div');
+    badge.className = 'badge-index';
+    badge.textContent = index + 1;
+    card.appendChild(badge);
+
+    // MAIN PHOTO BADGE
+    if (index === mainIndex) {
+      const main = document.createElement('div');
+      main.className = 'badge-main';
+      main.textContent = 'Principale';
+      card.appendChild(main);
+    }
+
+    // CLICK = SET MAIN PHOTO
+    card.addEventListener('click', () => {
+      mainIndex = index;
+      render();
+    });
+
+    // REMOVE BUTTON
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.innerHTML = '×';
     btn.className = 'btn-remove';
-    btn.onclick = () => removeFile(index);
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      removeFile(index);
+    });
 
     card.appendChild(btn);
-    preview.appendChild(card);
+
+    // ── DRAG & DROP REORDER ─────────────────
+    card.addEventListener('dragstart', onDragStart);
+    card.addEventListener('dragover', e => e.preventDefault());
+    card.addEventListener('drop', onDrop);
+    card.addEventListener('dragend', onDragEnd);
+
+    return card;
   }
 
+  // ── REMOVE ────────────────────────────────
   function removeFile(index) {
     const f = files[index];
     if (f.objectUrl) URL.revokeObjectURL(f.objectUrl);
+
     files.splice(index, 1);
+
+    if (mainIndex >= files.length) mainIndex = 0;
+
     render();
   }
 
+  // ── DRAG REORDER ──────────────────────────
+  let dragIndex = null;
+
+  function onDragStart(e) {
+    dragIndex = +e.currentTarget.dataset.index;
+  }
+
+  function onDrop(e) {
+    const targetIndex = +e.currentTarget.dataset.index;
+    if (dragIndex === targetIndex) return;
+
+    const moved = files.splice(dragIndex, 1)[0];
+    files.splice(targetIndex, 0, moved);
+
+    if (mainIndex === dragIndex) mainIndex = targetIndex;
+
+    render();
+  }
+
+  function onDragEnd() {
+    dragIndex = null;
+  }
+
+  // ── COUNT ────────────────────────────────
   function updateCount() {
     const valid = files.filter(f => !f.error).length;
     countEl.textContent = `${valid} photo(s)`;
   }
 
-  // ── FORM SUBMISSION FIX ───────────────────
-  // Inject files manually on submit
+  // ── FORM SUBMIT ──────────────────────────
   const form = fileInput.closest('form');
 
   if (form) {
-    form.addEventListener('submit', (e) => {
-      // remove previous dynamic inputs
+    form.addEventListener('submit', () => {
       form.querySelectorAll('.dynamic-file').forEach(el => el.remove());
 
-      files.forEach(({ file, error }) => {
+      // 👉 MAIN IMAGE FIRST
+      const ordered = [...files];
+      if (ordered.length > 1) {
+        const main = ordered.splice(mainIndex, 1)[0];
+        ordered.unshift(main);
+      }
+
+      ordered.forEach(({ file, error }) => {
         if (error) return;
 
         const input = document.createElement('input');
@@ -165,6 +238,7 @@
     setTimeout(() => t.remove(), 2000);
   }
 })();
+
 
 const pictureUpload = document.getElementById('profile_picture_upload');
 
