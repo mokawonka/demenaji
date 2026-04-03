@@ -791,11 +791,6 @@ span {
   margin-top: -2px;
 }
 
-/*Datepickers*/
-.datepickers{
-  padding-right:0;
-}
-
 .has-search .form-control {
   padding-left: 2.375rem;
 }
@@ -831,24 +826,17 @@ span {
 .fab-btn {
   width: 60px;
   height: 60px;
-
   border-radius: 50%;
-
   background: linear-gradient(135deg, #ff9b61, #ff7a2f);
   color: white;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   text-decoration: none;
-  
   font-size: 20px;
-
   box-shadow:
     0 10px 25px rgba(255, 123, 47, 0.4),
     0 4px 10px rgba(0, 0, 0, 0.1);
-
   transition: all 0.25s ease;
 }
 
@@ -899,14 +887,6 @@ span {
   color: white;
 }
 
-.btn-browse
-{
-  background: white;
-  color: orange;
-  outline: none;
-  box-shadow: none;
-}
-
 .orangeinput
 {
   border-color: rgb(255, 200, 98);
@@ -922,36 +902,12 @@ span {
 }
 
 
-.createadtext{
-  color: #777777; 
-  font-weight: 100; 
-  font-size:17px;
-  padding-left:0;
-  padding-right:0;
-}
-
 hr { margin: 21px 0 21px 0; }
 
 .padfifty{
   padding-top:50px;
 }
 
-.bottompad{
-  padding-bottom:100px;
-}
-
-.apply-info{
-  display: block;
-  overflow: auto;
-  height:auto;
-  padding-top:7px;
-  padding-left:7px;
-  border-style:solid;
-  border-width: thin;
-  border-radius:5px; 
-  border-color:rgb(198, 225, 247);
-  background:rgb(247, 247, 247)
-}
 
 #hiddenPlaces{
   padding-top: 10%;
