@@ -36,7 +36,8 @@ class PlacesController < ApplicationController
     poster = User.find_by(id: @place.user_id)
     @posterName = poster&.name || "Utilisateur inconnu"
     @posterPicture = poster&.profile_picture
-    @poster_phone = poster&.phone_number
+    @posterPhone = poster&.phone_number
+    @posterJob = poster&.job_title
   end
 
 

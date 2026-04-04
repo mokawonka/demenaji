@@ -266,6 +266,22 @@ function updateMap() {
         }
 
         showedFeatures = jitterDuplicates(showedFeatures);
+
+        // ← write jittered coords back to DOM
+        showedFeatures.forEach(function(f) {
+            var id  = f.properties.name;
+            var li  = ul.querySelector('li p.d-none:nth-of-type(3)'); // fallback
+            // find the exact li by id
+            var lis = ul.getElementsByTagName('li');
+            for (var i = 0; i < lis.length; i++) {
+                if (getIdFromLi(lis[i]) === id) {
+                    lis[i].querySelectorAll('p.d-none')[0].textContent = f.geometry.coordinates[0]; // lng
+                    lis[i].querySelectorAll('p.d-none')[1].textContent = f.geometry.coordinates[1]; // lat
+                    break;
+                }
+            }
+        });
+
         var mapdata = { "type": "FeatureCollection", "features": showedFeatures };
 
         if (!map.getSource('places')) {
@@ -679,14 +695,11 @@ if($("#map").length != 0)
 
     map.dragRotate.disable();
     map.addControl(new mapboxgl.NavigationControl({showCompass:false}));
-    if(window.location.search.includes("location")) centerOnLocation(map);
 
     map.addControl(geolocate);
 
     map.on('load', function()
     {
-        if(window.location.search.includes("location")) geolocate.trigger();
-
         var moveTimeout;
 
         map.on('moveend', function()
@@ -988,5 +1001,15 @@ if($("#search-address").length != 0)
         }
         list.style.display = "none";
     });
-
 }
+
+$(document).on('click', '.poster-avatar, .applicant-profile-pic', function() {
+  var src = $(this).attr('src');
+  if (!src) return;
+  $('#avatar-modal-img').attr('src', src);
+  $('#avatar-modal').addClass('open');
+});
+
+$('#avatar-modal').on('click', function() {
+  $('#avatar-modal').removeClass('open');
+});

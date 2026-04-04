@@ -101,8 +101,8 @@
       <div class="container pt-3">
         <p class="fs-15">Adresse: <%= place.address %></p>
 
-        <% if @poster_phone.present? %>
-          <% phone_parts = @poster_phone.split('') %>
+        <% if @posterPhone.present? %>
+          <% phone_parts = @posterPhone.split('') %>
           <div class="d-flex align-items-center gap-2 mt-2 mb-3"
               style="background:#fff7f0; border:0.5px solid #f5c9a3; border-radius:10px; padding:10px 14px;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#e87722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -152,11 +152,11 @@
             <% if @posterPicture&.attached? %>
               <%= image_tag @posterPicture, class: "poster-avatar" %>
             <% else %>
-              <%= image_tag 'profile_pic_mini.png', class: "poster-avatar" %>
+              <%= image_tag 'profile_pic.png', class: "poster-avatar" %>
             <% end %>
             <div class="poster-info">
               <span class="poster-name"><%= @posterName || "Utilisateur inconnu" %></span>
-              <span class="poster-label">Propriétaire</span>
+              <span class="poster-label"><%= @posterJob || "" %></span>
             </div>
           </div>
 
