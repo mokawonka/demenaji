@@ -160,22 +160,28 @@
             </div>
           </div>
 
-          <%= form_with url: messages_path, scope: :message, method: :post,
+          <% if !@user_is_owner && signed_in? %>
+              <%= form_with url: messages_path, scope: :message, method: :post,
                         class: "message-form", data: { turbo: false } do |f| %>
-            <%= f.hidden_field :recipient_id, value: @place.user_id %>
+              <%= f.hidden_field :recipient_id, value: @place.user_id %>
 
-            <div class="message-form-group">
-              <%= f.text_area :body,
-                              spellcheck: true,
-                              maxlength: 700,
-                              required: true,
-                              class: "message-textarea",
-                              id: "messagearea",
-                              rows: 3,
-                              placeholder: "Écrivez un message au propriétaire…" %>
-            </div>
+              <div class="message-form-group">
+                <%= f.text_area :body,
+                                spellcheck: true,
+                                maxlength: 700,
+                                required: true,
+                                class: "message-textarea",
+                                id: "messagearea",
+                                rows: 3,
+                                placeholder: "Écrivez un message au propriétaire…" %>
+              </div>
 
-            <%= f.submit "Envoyer le message", class: "message-submit-btn" %>
+              <%= f.submit "Envoyer le message", class: "message-submit-btn" %>
+            <% end %>
+          <% elsif !signed_in? %>
+            <a href="<%= login_path %>" class="message-submit-btn" style="text-decoration:none; text-align:center; color:white; display:block;">
+              Connectez-vous pour contacter le propriétaire
+            </a>
           <% end %>
 
         </div>

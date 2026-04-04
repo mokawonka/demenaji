@@ -11,6 +11,7 @@ class UsersController < ApplicationController
     @user.name  = @user.email.split("@").first
 
     if @user.save
+      UserMailer.welcome(@user).deliver_now
       session[:user_id] = @user.id
       redirect_to root_path
     else
@@ -63,6 +64,7 @@ class UsersController < ApplicationController
 
 
   def delete_account
+    UserMailer.delete_account(current_user).deliver_now
     current_user.destroy
     session.delete(:user_id)
     redirect_to root_path, notice: 'Votre compte a été supprimé.'

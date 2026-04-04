@@ -640,43 +640,12 @@ $(window).resize(function () {
 }).resize();
 
 
-function onError(error) {
-    //alert('code: '    + error.code    + '\n' + 'message: ' + error.message + '\n');
-}
-
-function centerOnLocation(mapInstance) {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            var currLocation = [position.coords.longitude, position.coords.latitude];
-            mapInstance.setCenter(currLocation);
-        }, onError, {enableHighAccuracy: true});
-    }
-}
-
-
-const geolocate = new mapboxgl.GeolocateControl({
-    positionOptions: {
-        enableHighAccuracy: true
-    },
-    fitBoundsOptions:{
-        zoom:11,
-        duration:0
-    },
-    trackUserLocation: false
-});
-
-
-
 var popup = new mapboxgl.Popup({ 
     closeButton: false, 
     closeOnClick: false, 
     anchor:'bottom-left',
     offset: [0, -24]
 });
-
-function openInNewTab(url) {
-    var win = window.open(url, '_blank');
-}
 
 
 if($("#map").length != 0)
@@ -695,8 +664,6 @@ if($("#map").length != 0)
 
     map.dragRotate.disable();
     map.addControl(new mapboxgl.NavigationControl({showCompass:false}));
-
-    map.addControl(geolocate);
 
     map.on('load', function()
     {

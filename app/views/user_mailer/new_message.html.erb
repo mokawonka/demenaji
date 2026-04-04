@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<body style="margin:0; padding:0; background:#f9fafb; font-family:'Helvetica Neue', Arial, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb; padding:40px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.07);">
+
+          <tr>
+            <td style="background:#17a2b8; padding:36px 40px; text-align:center;">
+              <h1 style="margin:0; color:#ffffff; font-size:24px; font-weight:600;">
+                Nouveau message
+              </h1>
+              <p style="margin:8px 0 0; color:rgba(255,255,255,0.85); font-size:15px;">
+                <%= @sender.name %> vous a écrit
+              </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:40px;">
+              <div style="background:#f9fafb; border-left:4px solid #17a2b8; border-radius:8px; padding:16px 20px; margin:0 0 24px;">
+                <p style="margin:0; font-size:15px; color:#374151; line-height:1.6;">
+                  <%= @message.body %>
+                </p>
+              </div>
+
+              <table cellpadding="0" cellspacing="0" style="margin:24px 0;">
+                <tr>
+                  <td style="background:#17a2b8; border-radius:999px; padding:14px 32px;">
+                    <a href="<%= conversation_url(@conversation) %>"
+                       style="color:#ffffff; font-size:15px; font-weight:600; text-decoration:none;">
+                      Répondre →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="background:#f9fafb; padding:24px 40px; text-align:center; border-top:1px solid #f3f4f6;">
+              <p style="margin:0; font-size:12px; color:#9ca3af;">
+                Vous pouvez désactiver ces notifications dans vos paramètres.<br>
+                © <%= Time.current.year %> Demenaji — Algérie
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

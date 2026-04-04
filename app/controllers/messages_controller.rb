@@ -3,12 +3,23 @@ class MessagesController < ApplicationController
 
   def create
     @conversation = find_or_create_conversation
+    return if @conversation.nil?
+
     @message = @conversation.messages.build(
       body:      message_params[:body],
       sender_id: current_user.id
     )
 
     if @message.save
+
+      recipient = @conversation.user1_id == current_user.id ? 
+            User.find(@conversation.user2_id) : 
+            User.find(@conversation.user1_id)
+  
+      if recipient.email_notifications?
+        UserMailer.new_message(recipient, @message).deliver_later
+      end
+
       respond_to do |format|
         format.json do
           render json: {
@@ -40,7 +51,14 @@ class MessagesController < ApplicationController
       current_user.conversations.find(message_params[:conversation_id])
     else
       recipient = User.find(message_params[:recipient_id])
+
+      if recipient.id == current_user.id
+        flash[:alert] = "Vous ne pouvez pas vous envoyer un message."
+        redirect_to request.referer || root_path and return nil
+      end
+
       Conversation.find_or_create_between(current_user, recipient)
     end
   end
+
 end

@@ -32,7 +32,8 @@
       <div class="container-fluid px-3 px-lg-4">
 
         <a class="p-0 me-3 me-lg-4" href="<%= root_path %>">
-          <%= image_tag 'logo.png', height: "45" %>
+          <%= image_tag 'logo.png', height: "45", class: "d-none d-md-block" %>
+          <%= image_tag 'favicon.ico', height: "45", class: "d-md-none" %>
         </a>
 
         <% if signed_in? %>
