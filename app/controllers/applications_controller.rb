@@ -43,6 +43,7 @@ class ApplicationsController < ApplicationController
     )
 
     if application.save
+
       @place.increment!(:number_of_applicants)
 
       # === Message automatique au propriétaire ===
@@ -51,11 +52,11 @@ class ApplicationsController < ApplicationController
         conversation = Conversation.find_or_create_between(current_user, poster)
         auto_body = "Nouvelle candidature reçue pour votre annonce \"#{@place.composed_title}\". " \
                     "Vous pouvez la consulter dans Mes annonces rubrique Voir les candidatures."
-        Message.create!(
-          conversation: conversation,
-          sender: current_user,
-          body: auto_body
-        )
+        Message.create!(conversation: conversation, sender: current_user, body: auto_body)
+
+        # ── Emails ──
+        UserMailer.new_application_poster(poster, application, @place).deliver_later     if poster.email_notifications?
+        UserMailer.new_application_applicant(current_user, application, @place).deliver_later if current_user.email_notifications?
       end
       # ===========================================
 

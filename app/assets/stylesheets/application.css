@@ -188,7 +188,7 @@ label{
 
 .container-main-page {
   position:absolute;
-  height: calc(100% - 82px); /* 72px = 57px + 25px*/
+  height: calc(100% - 82px); /* 82px = 57px + 25px*/
   width: 100%;
   padding-left:0;
   padding-right:0;
@@ -198,12 +198,12 @@ label{
 
 #mainsidebar {
   position: relative;
-  padding-left:0;
-  padding-right:0;
-  margin-left:0;
-  margin-right:0;
-  overflow:auto;
-  min-width: 330px;
+  padding-left: 0;
+  padding-right: 0;
+  margin-left: 0;
+  margin-right: 0;
+  overflow: auto;
+  min-width: 335px;
 }
 
 /* ── Scrollable list container ──────────────── */
@@ -372,10 +372,6 @@ label{
 
 /*Filter section*/
 
-span {
-  display: block;
-}
-
 #filters{
   position:absolute;
   left: 0; 
@@ -387,8 +383,25 @@ span {
   text-align: center;
 }
 
-#rentlabel{
-  padding-top:15px;
+.filtersLabel{
+  width: 100px;
+  flex-shrink: 0;
+  text-align: left;
+}
+
+.button-filter,
+.button-filter:hover,
+.button-filter-activ,
+.button-filter-lg,
+.button-filter-lg:hover,
+.button-filter-lg-activ {
+  min-width: 0;
+  width: 100%;
+  padding-left: 2px;
+  padding-right: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ******** CAROUSEL ************/

@@ -23,5 +23,20 @@ class UserMailer < ApplicationMailer
     mail(to: @recipient.email, subject: "#{@sender.name} vous a envoyé un message")
   end
 
+  def new_application_poster(poster, application, place)
+    @poster      = poster
+    @application = application
+    @place       = place
+    @applicant   = application.applicant
+    mail(to: @poster.email, subject: "Nouvelle candidature pour \"#{@place.composed_title}\"")
+  end
+
+  def new_application_applicant(applicant, application, place)
+    @applicant   = applicant
+    @application = application
+    @place       = place
+    mail(to: @applicant.email, subject: "Votre candidature a bien été envoyée")
+  end
+
 
 end
