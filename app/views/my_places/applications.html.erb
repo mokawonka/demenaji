@@ -82,6 +82,10 @@
                 <strong><%= app.desired_rental_duration ? "#{app.desired_rental_duration} mois" : '—' %></strong>
               </div>
               <div>
+                <span class="fs-12d">Nombre d'occupants</span><br>
+                <strong><%= app.occupants_number || '—' %></strong>
+              </div>
+              <div>
                 <span class="fs-12d">Téléphone de référence</span><br>
                 <strong style="color:#555;"><%= app.reference_phone || '—' %></strong>
               </div>

@@ -94,6 +94,7 @@ class ApplicationsController < ApplicationController
   def application_params
     params.permit(
       :marital_status,
+      :occupants_number,
       :reference_phone,
       :desired_rental_duration,
       :has_pets,

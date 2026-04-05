@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_02_185651) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_05_101530) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -50,6 +50,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_02_185651) do
     t.text "details"
     t.boolean "has_pets", default: false
     t.string "marital_status"
+    t.integer "occupants_number"
     t.uuid "place_id", null: false
     t.string "reference_phone"
     t.integer "status", default: -1, null: false

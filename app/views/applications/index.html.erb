@@ -66,6 +66,14 @@
             <% end %>
           </div>
 
+          <%# Contact Information - Made very clear %>
+          <div style="background:#f8f9fa; border-radius:12px; padding:16px; margin-bottom:20px;">
+            <p class="fs-12d" style="margin-bottom:8px;">📞 Contact direct</p>
+            <strong style="font-size:16px; color:#333;">
+              <%= item.applicant.phone_number || 'Non renseigné' %>
+            </strong>
+          </div>
+
           <%# Application details – clean two-column layout %>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; font-size:15px; color:#555;">
             <div>
@@ -75,6 +83,10 @@
             <div>
               <span class="fs-12d">Durée souhaitée</span><br>
               <strong><%= item.desired_rental_duration ? "#{item.desired_rental_duration} mois" : '—' %></strong>
+            </div>
+            <div>
+              <span class="fs-12d">Nombre d'occupants</span><br>
+              <strong><%= item.occupants_number || '—' %></strong>
             </div>
             <div>
               <span class="fs-12d">Téléphone de référence</span><br>

@@ -38,5 +38,18 @@ class UserMailer < ApplicationMailer
     mail(to: @applicant.email, subject: "Votre candidature a bien été envoyée")
   end
 
+  def application_invited(applicant, application, place)
+    @applicant   = applicant
+    @application = application
+    @place       = place
+    mail(to: @applicant.email, subject: "Bonne nouvelle ! Vous êtes invité pour \"#{@place.composed_title}\"")
+  end
+
+  def application_declined(applicant, application, place)
+    @applicant   = applicant
+    @application = application
+    @place       = place
+    mail(to: @applicant.email, subject: "Mise à jour de votre candidature pour \"#{@place.composed_title}\"")
+  end
 
 end

@@ -114,6 +114,16 @@
 
       <div class="form-group">
         <label class="fs-12d" style="text-align:left; margin-bottom:6px; display:block; font-size:15px;">
+          Nombre d'occupants
+        </label>
+        <%= f.number_field :occupants_number, 
+              class: "form-control orangeinput", 
+              min: 1, max: 20, 
+              placeholder: "Nombre de personnes qui occuperont le logement" %>
+      </div>
+
+      <div class="form-group">
+        <label class="fs-12d" style="text-align:left; margin-bottom:6px; display:block; font-size:15px;">
           Téléphone de référence (ancien propriétaire, agences, etc...)
         </label>
         <%= text_field_tag "reference_phone",

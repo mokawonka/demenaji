@@ -1,3 +1,67 @@
+.address-autocomplete-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+input.mbaa-address-autocomplete {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1.5px solid #e5e7eb;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  outline: none;
+  background: #fff;
+}
+
+input.mbaa-address-autocomplete:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+}
+
+ul.mbaa-results-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  display: none;
+  margin: 0;
+  padding: 6px 0;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #f1f5f9;
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.08),
+    0 4px 10px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+ul.mbaa-results-list.mbaa-fill {
+  display: block;
+}
+
+ul.mbaa-results-list li.mbaa {
+  list-style: none;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+ul.mbaa-results-list li.mbaa:hover,
+ul.mbaa-results-list li.mbaa.selected {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+ul.mbaa-results-list li.mbaa + li.mbaa {
+  border-top: 1px solid #f3f4f6;
+}
 
 .fw-100 { color: #777777;font-weight: 300; font-size:20px;}
 .fs-20 { color: #777777;font-weight: 300; font-size:20px;}
@@ -784,6 +848,11 @@ label{
   text-align: center;
   pointer-events: none;
   color: #aaa;
+}
+
+
+#search-input{
+  border-radius: 14px;
 }
 
 #search-input:focus{

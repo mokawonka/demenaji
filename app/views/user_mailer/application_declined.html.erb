@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<body style="margin:0; padding:0; background:#f9fafb; font-family:'Helvetica Neue', Arial, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb; padding:40px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.07);">
+
+          <tr>
+            <td style="background:#6b7280; padding:36px 40px; text-align:center;">
+              <h1 style="margin:0; color:#fff; font-size:24px; font-weight:600;">Mise à jour de candidature</h1>
+              <p style="margin:8px 0 0; color:rgba(255,255,255,0.85); font-size:15px;">
+                Concernant votre candidature sur Demenaji
+              </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:40px;">
+              <p style="margin:0 0 20px; font-size:16px; color:#374151;">
+                Bonjour <strong><%= @applicant.name %></strong>,
+              </p>
+              <p style="margin:0 0 20px; font-size:15px; color:#6b7280; line-height:1.7;">
+                Le propriétaire de l'annonce 
+                <strong style="color:#374151;">"<%= @place.composed_title %>"</strong> 
+                n'a pas retenu votre candidature cette fois-ci.
+              </p>
+
+              <div style="background:#fef3c7; border-left:4px solid #f59e0b; border-radius:8px; padding:16px 20px; margin:0 0 24px;">
+                <p style="margin:0; font-size:14px; color:#92400e; line-height:1.6;">
+                  Ne vous découragez pas — de nombreuses autres annonces vous attendent sur Demenaji.
+                </p>
+              </div>
+
+              <table cellpadding="0" cellspacing="0" style="margin:24px 0;">
+                <tr>
+                  <td style="background:#f97316; border-radius:999px; padding:14px 32px;">
+                    <a href="<%= root_url %>"
+                       style="color:#fff; font-size:15px; font-weight:600; text-decoration:none;">
+                      Voir d'autres annonces →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="background:#f9fafb; padding:24px 40px; text-align:center; border-top:1px solid #f3f4f6;">
+              <p style="margin:0; font-size:12px; color:#9ca3af;">
+                © <%= Time.current.year %> Demenaji — Algérie
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

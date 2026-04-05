@@ -40,12 +40,22 @@ class MyPlacesController < ApplicationController
 
     if app
       app.update(status: new_status)
+
+      applicant = app.applicant
+      if applicant.email_notifications?
+        if new_status == 1
+          UserMailer.application_invited(applicant, app, place).deliver_later
+        else
+          UserMailer.application_declined(applicant, app, place).deliver_later
+        end
+      end
+
       flash[:notice] = success_message
     else
       flash[:alert] = "Candidature introuvable."
     end
 
-    # ←←← THIS IS THE IMPORTANT CHANGE ←←←
     redirect_to place_applications_path(place_id)
   end
+
 end
