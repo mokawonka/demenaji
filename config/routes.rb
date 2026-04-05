@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   root 'places#index'
 
+  get "about", to: "pages#about"
+
   get '/register', to: 'users#new'
   post '/register', to: 'users#create'
   get '/login', to: 'sessions#new'
