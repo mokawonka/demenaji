@@ -37,33 +37,20 @@ cd demenaji
 bundle install
 ```
 
-### 3. Installer les dépendances JavaScript
 
-```bash
-yarn install
-```
-
-### 4. Configurer les variables d'environnement
-
-Copiez le fichier d'exemple et renseignez vos valeurs :
-
-```bash
-cp .env.example .env
-```
-
-### 5. Créer et migrer la base de données
+### 3. Créer et migrer la base de données
 
 ```bash
 rails db:create db:migrate
 ```
 
-### 6. Optionnel: Création d'une base de données de test
+### 4. Optionnel: Création d'une base de données de test
 
 ```bash
 rails db:seed
 ```
 
-### 7. Lancer le serveur
+### 5. Lancer le serveur
 
 ```bash
 rails server
@@ -81,7 +68,6 @@ L'application est accessible sur [http://localhost:3000](http://localhost:3000).
 | Base de données | PostgreSQL |
 | Frontend | Hotwire (Stimulus) |
 | Styles | CSS / Tailwind |
-| Authentification | Devise |
 
 ---
 
